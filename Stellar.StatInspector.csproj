@@ -15,4 +15,11 @@
     <PackageReference Include="Stellar.Abstractions" Version="1.1.1" />
     <PackageReference Include="Stellar.Plugin.InteropRefs" Version="1.1.1" />
   </ItemGroup>
+
+  <!-- Bundled stat-icon atlas + settings-gear (StatIconAtlas reads these by LogicalName). Without them the
+       published DLL ships iconless and every stat row renders a blank white square / the mini-HUD gear is missing. -->
+  <ItemGroup>
+    <EmbeddedResource Include="Resources/stat-icon-atlas.png" LogicalName="Stellar.StatInspector.stat-icon-atlas.png" />
+    <EmbeddedResource Include="Resources/settings-gear.png" LogicalName="Stellar.StatInspector.settings-gear.png" />
+  </ItemGroup>
 </Project>
