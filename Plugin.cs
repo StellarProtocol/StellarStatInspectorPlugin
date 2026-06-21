@@ -156,9 +156,10 @@ public sealed partial class Plugin : IStellarPlugin
 
     private void ToggleMiniHudAndPersist()
     {
-        _miniHudWindow.SetVisible(!_miniHudWindow.IsShown);
-        _windowSection.Set("minihud_visible", _miniHudWindow.IsShown);
-        _windowSection.Save();
+        // Persist through the framework's layout slot (the single source of truth the framework reapplies on
+        // launch — framework 1.4.0). The old private "minihud_visible" key desynced from the slot, so the slot's
+        // stale value won on relaunch and the mini-HUD came back hidden even after F6 turned it on.
+        _miniHudWindow.SetVisiblePersist(!_miniHudWindow.IsShown);
         _services.Log.Info($"[StatInspector] mini-HUD {(_miniHudWindow.IsShown ? "shown" : "hidden")}");
     }
 

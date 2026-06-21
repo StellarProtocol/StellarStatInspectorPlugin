@@ -12,8 +12,8 @@
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Stellar.Abstractions" Version="1.1.1" />
-    <PackageReference Include="Stellar.Plugin.InteropRefs" Version="1.1.1" />
+    <PackageReference Include="Stellar.Abstractions" Version="1.4.0" />
+    <PackageReference Include="Stellar.Plugin.InteropRefs" Version="1.4.0" />
   </ItemGroup>
 
   <!-- Bundled stat-icon atlas + settings-gear (StatIconAtlas reads these by LogicalName). Without them the
