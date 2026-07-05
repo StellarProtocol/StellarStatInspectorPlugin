@@ -33,7 +33,12 @@ public sealed partial class Plugin
             Category:    WindowCategory.HUD,
             Style:       WindowPanelStyle.Borderless)   // chrome-less custom overlay (NOT a titled glass panel)
         {
-            StartVisible            = _windowSection.Get<bool>("minihud_visible", true),
+            // Default shown; the framework layout slot is the single source of truth for persisted hide/show
+            // (ApplySavedRect honours a persisted hide on mount) and the F6 toggle writes it via
+            // SetVisiblePersist. The old private "minihud_visible" key desynced — it was read here but no longer
+            // written, so a stale/false value left the HUD permanently hidden at start, which (never mounting)
+            // also stopped the saved position from restoring and let the show-path clobber it with DefaultRect.
+            StartVisible            = true,
             Draggable               = true,   // required so BuildChrome registers the (edit-only) whole-frame drag
             EditModeDragOnly        = true,   // gameplay overlay: moves only in layout edit-mode (Shift+`)
             HideUntilInWorld        = true,
