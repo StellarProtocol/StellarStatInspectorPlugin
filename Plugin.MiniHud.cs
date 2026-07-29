@@ -41,8 +41,9 @@ public sealed partial class Plugin
             StartVisible            = true,
             Draggable               = true,   // required so BuildChrome registers the (edit-only) whole-frame drag
             EditModeDragOnly        = true,   // gameplay overlay: moves only in layout edit-mode (Shift+`)
-            HideUntilInWorld        = true,
-            AutoHideBehindGameMenus = true,
+            // Gameplay in-world overlay: draw only while in the World phase (v2 render-gate; replaces the
+            // removed HideUntilInWorld / AutoHideBehindGameMenus bools).
+            ShouldRender            = () => _services.ClientState.Phase == GamePhase.World,
         };
         return _services.Windows.Register(new WindowRegistration(spec, BuildMiniRoot()));
     }
