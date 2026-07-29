@@ -36,8 +36,10 @@ public sealed partial class Plugin
             StartVisible = _windowSection.Get<bool>("settings_visible", false),
             Draggable    = true,
             Closable     = true,
-            // Companion picker for the in-world stat HUD: only meaningful while playing, so gate to World (v2).
-            ShouldRender = () => _services.ClientState.Phase == GamePhase.World,
+            // Companion picker for the in-world stat HUD: only meaningful while playing, so gate to World (v2)
+            // and hide during loading screens.
+            ShouldRender = () => _services.ClientState.Phase == GamePhase.World
+                                 && (_services.ClientState.UiState & GameUIState.Loading) == 0,
         };
         return _services.Windows.Register(new WindowRegistration(spec, BuildSettingsRoot(),
             OnClose: () => { _settingsWindow.SetVisible(false); ClearPeek(); }));
