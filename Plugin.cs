@@ -178,7 +178,7 @@ public sealed partial class Plugin : IStellarPlugin
         {
             RebuildSnapshotIfDirty();
             RefreshWindowPeek();
-            AdvanceResetState(SafeTimeNow());
+            AdvanceResetState(_services.Framework.TimeNow);
         }
         SyncSettingsVisibility();
     }
@@ -200,7 +200,7 @@ public sealed partial class Plugin : IStellarPlugin
     private void TrackStatChanges()
     {
         if (!_services.PlayerStats.IsAvailable) return;
-        var now = Time.realtimeSinceStartup;
+        var now = _services.Framework.TimeNow;
         foreach (var id in _selected)
         {
             var cur = _services.PlayerStats.TryGetAttribute(id);

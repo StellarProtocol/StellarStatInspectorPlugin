@@ -140,7 +140,7 @@ public sealed partial class Plugin
     {
         dir = 0;
         if (!_changes.TryGetValue(attrId, out var ch)) return 0f;
-        var age = UnityEngine.Time.realtimeSinceStartup - ch.At;
+        var age = _services.Framework.TimeNow - ch.At;
         if (age >= DeltaFadeSeconds) return 0f;
         dir = ch.Delta > 0 ? 1 : -1;
         return 1f - age / DeltaFadeSeconds;

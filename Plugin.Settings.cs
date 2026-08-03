@@ -73,7 +73,7 @@ public sealed partial class Plugin
         {
             new TextElement(() => FooterCaption(), () => MenuMutedRgba()),
             new SpacerElement(),
-            new ButtonElement(() => ResetLabel(), () => HandleResetClick(SafeTimeNow())),
+            new ButtonElement(() => ResetLabel(), () => HandleResetClick(_services.Framework.TimeNow)),
         }, Gap: 8f);
 
         return new ColumnElement(new HudElement[]
@@ -145,10 +145,5 @@ public sealed partial class Plugin
             _resetState = ResetState.Idle;
         else if (_resetState == ResetState.Flashing && now - _resetStateChangedAt > ResetFlashDurS)
             _resetState = ResetState.Idle;
-    }
-
-    private static float SafeTimeNow()
-    {
-        try { return Time.realtimeSinceStartup; } catch { return 0f; }
     }
 }
