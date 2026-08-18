@@ -1,0 +1,17 @@
+{
+  "stat.clear": "Clear",
+  "stat.footer.selected": "Selected: {0} stats",
+  "stat.footer.showing": "Showing {0} rows  •  Selected: {1}",
+  "stat.header": "STATS",
+  "stat.hotkey.toggle": "Toggle StatInspector mini-HUD",
+  "stat.hudColumns": "HUD columns:",
+  "stat.loading": "Loading attributes…",
+  "stat.noneSelected": "No stats selected.",
+  "stat.notInWorld": "Not in-world — values unavailable.",
+  "stat.openSettings": "Open settings",
+  "stat.reset": "Reset",
+  "stat.reset.confirm": "Click again to confirm reset",
+  "stat.reset.done": "✓ Reset",
+  "stat.search": "Search:",
+  "stat.settings.title": "StatInspector Settings"
+}
