@@ -96,19 +96,23 @@ public sealed partial class Plugin
     }
 
     // Walks a list of IDs sharing the same (group, name) and assigns short
-    // disambiguation prefixes. Two cases:
-    //   * Exact pair (X, X+1)       → "B" / "T"   (Base / Total in X+1 form)
-    //   * Multiple pairs (X1, X1+1, X2, X2+1, ...) → "B1/T1", "B2/T2", ...
+    // disambiguation prefixes. Owner-confirmed convention: lower id X = TOTAL ("T"),
+    // higher id X+1 = BASE ("B"). Two cases:
+    //   * Exact pair (X, X+1)       → "T" / "B"   (Total on X, Base on X+1)
+    //   * Multiple pairs (X1, X1+1, X2, X2+1, ...) → "T1/B1", "T2/B2", ...
     //   * Stragglers that don't pair up cleanly → "#NNNN" fallback
     // Pairing is detected by ascending sort then checking consecutive
     // ID delta == 1.
     private void AssignDisambiguationLabels(List<int> ids)
     {
         ids.Sort();
+        // Owner-confirmed convention (SEA in-game evidence, id-based so identical on every region):
+        // the LOWER id (X) holds the TOTAL/effective value and the HIGHER id (X+1) holds the BASE
+        // value — the opposite of the naive "higher = total". So label lower id "T" and higher id "B".
         if (ids.Count == 2 && ids[1] == ids[0] + 1)
         {
-            _disambiguationLabel[ids[0]] = "B";
-            _disambiguationLabel[ids[1]] = "T";
+            _disambiguationLabel[ids[0]] = "T";
+            _disambiguationLabel[ids[1]] = "B";
             return;
         }
 
@@ -119,8 +123,8 @@ public sealed partial class Plugin
             if (i + 1 < ids.Count && ids[i + 1] == ids[i] + 1)
             {
                 var suffix = pairIndex.ToString(CultureInfo.InvariantCulture);
-                _disambiguationLabel[ids[i]]     = "B" + suffix;
-                _disambiguationLabel[ids[i + 1]] = "T" + suffix;
+                _disambiguationLabel[ids[i]]     = "T" + suffix;
+                _disambiguationLabel[ids[i + 1]] = "B" + suffix;
                 pairIndex++;
                 i += 2;
             }
@@ -136,7 +140,7 @@ public sealed partial class Plugin
         BuildOrderedGroups();
         EnsureSlugDefaults();
         _classificationBuilt = true;
-        _services.Log.Info($"[StatInspector] group classification built ({_groupMembers.Count} groups, {_ambiguousIds.Count} ambiguous IDs labelled Base/Total)");
+        LogClassificationBuilt(_groupMembers.Count, _ambiguousIds.Count);
     }
 
     private void BuildOrderedGroups()

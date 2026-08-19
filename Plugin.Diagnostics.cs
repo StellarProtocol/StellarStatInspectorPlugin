@@ -49,4 +49,16 @@ public sealed partial class Plugin
         if (!StellarDiagnostics.IsEnabled) return;
         _services.Log.Info($"[StatInspector] reconciliation: +{added} -{removed}");
     }
+
+    private void LogClassificationBuilt(int groups, int ambiguous)
+    {
+        if (!StellarDiagnostics.IsEnabled) return;
+        _services.Log.Info($"[StatInspector] group classification built ({groups} groups, {ambiguous} ambiguous IDs labelled Base/Total)");
+    }
+
+    private void LogFormatCacheBuilt(int classified)
+    {
+        if (!StellarDiagnostics.IsEnabled) return;
+        _services.Log.Info($"[StatInspector] format cache built ({classified} attrs classified)");
+    }
 }
