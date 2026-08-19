@@ -77,7 +77,7 @@ public sealed partial class Plugin
             classified++;
         }
 
-        _services.Log.Info($"[StatInspector] format cache built ({classified} attrs classified)");
+        LogFormatCacheBuilt(classified);
     }
 
     // Resolves the name used for percent-detection. Profile entries (the
@@ -112,6 +112,14 @@ public sealed partial class Plugin
         var numType = _services.GameData.Combat.GetAttribute(attrId)?.NumType ?? -1;
         if (numType == 0) { LogFormatDetect(attrId, name, "Raw(numType=0)"); return FormatKind.Raw; }
         if (numType >= 1) { LogFormatDetect(attrId, name, $"Percent(numType={numType})"); return FormatKind.PercentUndetermined; }
+
+        // Total variant (X+1) has no FightAttr row of its own → NumType -1. Inherit the BASE id's
+        // (X) NumType so percent/raw is decided the SAME on every locale. Without this, Total rows
+        // fall to the English-keyword fallback below, which misses on JP (T 会心 showed raw 500
+        // instead of % — SEA showed % because "Crit" matched a keyword). Locale-independent parity.
+        var baseNumType = _services.GameData.Combat.GetAttribute(attrId - 1)?.NumType ?? -1;
+        if (baseNumType == 0) { LogFormatDetect(attrId, name, "Raw(baseNumType=0)"); return FormatKind.Raw; }
+        if (baseNumType >= 1) { LogFormatDetect(attrId, name, $"Percent(baseNumType={baseNumType})"); return FormatKind.PercentUndetermined; }
 
         var trimmed = name.TrimEnd();
         if (trimmed.EndsWith("%") || trimmed.Contains("(%)"))

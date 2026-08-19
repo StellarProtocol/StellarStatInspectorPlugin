@@ -343,29 +343,40 @@ public sealed partial class Plugin : IStellarPlugin
     }
 
     /// <summary>
-    /// Resolves the display name for an attribute. <c>AttrDescriptionBase</c>
-    /// covers a subset of <c>EAttrType</c> IDs; <c>AttributeProfile</c> is the
-    /// authoritative fallback for the starter-list IDs.
+    /// Resolves the display name for an attribute. Prefers <c>AttributeProfile.Name</c> — the game's
+    /// short attribute name read as a LOCALIZED string (Japanese on a JP client, e.g. 会心 / 火属性強度 /
+    /// レジストダメージ軽減), the same source the game's own attribute panel uses. Falls back to
+    /// <c>GetAttribute.Name</c> (the description table / English catalog, English regardless of locale)
+    /// only for attrs the profile UI doesn't name — internal/derived stats that land in the "Other"
+    /// group. This is why the picker showed English before: the old order preferred GetAttribute first.
     /// </summary>
     private string? ResolveAttrName(int attrId)
     {
-        var name = _services.GameData.Combat.GetAttribute(attrId)?.Name;
-        if (!string.IsNullOrEmpty(name)) return name;
-        return _services.GameData.Combat.GetAttributeProfile(attrId)?.Name;
+        var profileName = _services.GameData.Combat.GetAttributeProfile(attrId)?.Name;
+        if (!string.IsNullOrEmpty(profileName)) return profileName;
+        return _services.GameData.Combat.GetAttribute(attrId)?.Name;
     }
 
     /// <summary>
-    /// Atlas cell for an attribute, cached per attrId. <see cref="StatIconAtlas.IndexFor"/>
-    /// lowercases the name each call, so without this it would run per visible row per
-    /// frame (both here and the always-on mini-HUD). The empty→0 fallback is NOT cached
-    /// so the real icon is picked up once the name resolves.
+    /// Atlas cell for an attribute, cached per attrId. Keys on the numeric <paramref name="attrId"/>
+    /// first (<see cref="StatIconAtlas.IndexForAttr"/>) so JP/any-locale clients get the right icon —
+    /// the localized display name only matches the keyword table on English clients (会心/幸運/火属性
+    /// 強度/… contain no ASCII keyword → 📊 placeholder). The attrId is stable across locales AND
+    /// framework versions (NO dependency on the framework catalog / EnumName, absent from the shipped
+    /// 2.1.0 framework). Falls back to the name-based <see cref="StatIconAtlas.IndexFor"/> for anything
+    /// unmapped. The empty→0 placeholder is NOT cached so the real icon is picked up once GameData
+    /// resolves; both surfaces (Settings picker + mini-HUD) funnel through here.
     /// </summary>
     private int IconIndexFor(int attrId)
     {
         if (_iconIndexOf.TryGetValue(attrId, out var idx)) return idx;
+
+        var byAttr = StatIconAtlas.IndexForAttr(attrId);
+        if (byAttr >= 0) { _iconIndexOf[attrId] = byAttr; return byAttr; }
+
         var name = ResolveAttrName(attrId);
         var i = StatIconAtlas.IndexFor(name ?? string.Empty);
-        if (!string.IsNullOrEmpty(name)) _iconIndexOf[attrId] = i;
+        if (i != 0) _iconIndexOf[attrId] = i;   // cache only a real hit; keep retrying the placeholder
         return i;
     }
 
