@@ -1,0 +1,17 @@
+{
+  "stat.clear": "ล้าง",
+  "stat.footer.selected": "เลือก: {0} รายการ",
+  "stat.footer.showing": "แสดง {0} แถว  •  เลือก: {1}",
+  "stat.header": "สเตตัส",
+  "stat.hotkey.toggle": "สลับมินิ HUD ของ StatInspector",
+  "stat.hudColumns": "จำนวนคอลัมน์ HUD:",
+  "stat.loading": "กำลังโหลดแอตทริบิวต์…",
+  "stat.noneSelected": "ยังไม่ได้เลือกสเตตัส",
+  "stat.notInWorld": "ไม่ได้อยู่ในโลก — ไม่มีค่าให้แสดง",
+  "stat.openSettings": "เปิดการตั้งค่า",
+  "stat.reset": "รีเซ็ต",
+  "stat.reset.confirm": "คลิกอีกครั้งเพื่อยืนยันการรีเซ็ต",
+  "stat.reset.done": "✓ รีเซ็ต",
+  "stat.search": "ค้นหา:",
+  "stat.settings.title": "การตั้งค่า StatInspector"
+}

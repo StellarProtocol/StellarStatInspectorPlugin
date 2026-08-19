@@ -46,6 +46,7 @@ public sealed partial class Plugin : IStellarPlugin
 
     // ---- Services + config -----------------------------------------------------------
     private readonly IPluginServices _services;
+    private readonly ILocalization _loc;
     private readonly IConfigSection _statSection;
     private readonly IConfigSection _windowSection;
 
@@ -106,6 +107,7 @@ public sealed partial class Plugin : IStellarPlugin
     public Plugin(IPluginServices services)
     {
         _services = services ?? throw new ArgumentNullException(nameof(services));
+        _loc = services.Localization;
 
         _statSection = _services.Config.GetSection("statinspector");
         _windowSection = _services.Config.GetSection("window");
@@ -129,7 +131,7 @@ public sealed partial class Plugin : IStellarPlugin
         _toggleAction = _services.Hotkeys.DeclareAction(
             new HotkeyAction(
                 Id:              "statinspector.toggle",
-                Description:     "Toggle StatInspector mini-HUD",
+                Description:     _loc.T("stat.hotkey.toggle"),
                 SuggestedDefault: new KeyBinding(StellarKeyCode.F6)),
             callback: ToggleMiniHudAndPersist);
 

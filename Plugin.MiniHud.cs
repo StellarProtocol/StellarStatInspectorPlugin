@@ -65,7 +65,7 @@ public sealed partial class Plugin
         // the gear reads as part of an intentional header instead of a disconnected floating corner icon.
         var header = new RowElement(new HudElement[]
         {
-            new TextElement(() => "STATS", () => MutedRgba(), Shadow: true),
+            new TextElement(() => _loc.T("stat.header"), () => MutedRgba(), Shadow: true),
             new SpacerElement(),
             gear,
         });
@@ -77,12 +77,12 @@ public sealed partial class Plugin
 
         var empty = new ColumnElement(new HudElement[]
         {
-            new TextElement(() => "No stats selected.", () => MutedRgba(), Shadow: true),
-            new ButtonElement(() => "Open settings", () => _settingsWindow.SetVisible(true)),
+            new TextElement(() => _loc.T("stat.noneSelected"), () => MutedRgba(), Shadow: true),
+            new ButtonElement(() => _loc.T("stat.openSettings"), () => _settingsWindow.SetVisible(true)),
         });
         var populated = new ConditionalElement(() => _miniSnapshot.Count > 0, grid, empty);
 
-        var notInWorld = new TextElement(() => "Not in-world — values unavailable.", () => MutedRgba(), Shadow: true);
+        var notInWorld = new TextElement(() => _loc.T("stat.notInWorld"), () => MutedRgba(), Shadow: true);
         var body = new ConditionalElement(() => _services.PlayerStats.IsAvailable, populated, notInWorld);
 
         // Tight gap (default Column gap is the 12px section spacing — too airy around the header divider here).

@@ -28,7 +28,7 @@ public sealed partial class Plugin
     {
         var spec = new WindowSpec(
             Id:          "statinspector.settings",
-            Title:       "StatInspector Settings",
+            Title:       _loc.T("stat.settings.title"),
             DefaultRect: new WindowRect(800f, 20f, SettingsWindowWidth, SettingsWindowHeight),
             Category:    WindowCategory.Tools,
             Style:       WindowPanelStyle.GlassMenu)
@@ -52,12 +52,12 @@ public sealed partial class Plugin
     {
         var search = new RowElement(new HudElement[]
         {
-            new TextElement(() => "Search:", Width: 60f),
+            new TextElement(() => _loc.T("stat.search"), Width: 60f),
             new InputElement(() => _search, SetSearch, 180f, OnChange: SetSearch),
-            new ButtonElement(() => "Clear", () => SetSearch(string.Empty), Enabled: () => !string.IsNullOrEmpty(_search)),
+            new ButtonElement(() => _loc.T("stat.clear"), () => SetSearch(string.Empty), Enabled: () => !string.IsNullOrEmpty(_search)),
         }, Gap: 4f);
 
-        var colButtons = new List<HudElement> { new TextElement(() => "HUD columns:", Width: 96f) };
+        var colButtons = new List<HudElement> { new TextElement(() => _loc.T("stat.hudColumns"), Width: 96f) };
         for (var n = 1; n <= 4; n++)
         {
             var c = n;
@@ -99,8 +99,8 @@ public sealed partial class Plugin
     {
         var trimmed = (_search ?? string.Empty).Trim();
         return trimmed.Length > 0
-            ? $"Showing {_snapshot.Count} rows  •  Selected: {_selected.Count}"
-            : $"Selected: {_selected.Count} stats";
+            ? _loc.TFormat("stat.footer.showing", _snapshot.Count, _selected.Count)
+            : _loc.TFormat("stat.footer.selected", _selected.Count);
     }
 
     private const int AttrIdSettingsScanMax = 14000;
@@ -114,9 +114,9 @@ public sealed partial class Plugin
 
     private string ResetLabel() => _resetState switch
     {
-        ResetState.Prompting => "Click again to confirm reset",
-        ResetState.Flashing  => "✓ Reset",
-        _                    => "Reset",
+        ResetState.Prompting => _loc.T("stat.reset.confirm"),
+        ResetState.Flashing  => _loc.T("stat.reset.done"),
+        _                    => _loc.T("stat.reset"),
     };
 
     private void HandleResetClick(float now)

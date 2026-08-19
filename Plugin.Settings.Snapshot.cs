@@ -35,7 +35,7 @@ public sealed partial class Plugin
 
         if (!_classificationBuilt)
         {
-            _snapshot.Add(new RowEntry { IsHeader = false, AttrId = -1, Text = "Loading attributes…" });
+            _snapshot.Add(new RowEntry { IsHeader = false, AttrId = -1, Text = _loc.T("stat.loading") });
             return;
         }
 

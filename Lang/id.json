@@ -1,0 +1,17 @@
+{
+  "stat.clear": "Bersihkan",
+  "stat.footer.selected": "Dipilih: {0} statistik",
+  "stat.footer.showing": "Menampilkan {0} baris  •  Dipilih: {1}",
+  "stat.header": "STATISTIK",
+  "stat.hotkey.toggle": "Alihkan mini-HUD StatInspector",
+  "stat.hudColumns": "Kolom HUD:",
+  "stat.loading": "Memuat atribut…",
+  "stat.noneSelected": "Tidak ada statistik yang dipilih.",
+  "stat.notInWorld": "Tidak di dalam dunia — nilai tidak tersedia.",
+  "stat.openSettings": "Buka pengaturan",
+  "stat.reset": "Atur ulang",
+  "stat.reset.confirm": "Klik lagi untuk konfirmasi reset",
+  "stat.reset.done": "✓ Atur ulang",
+  "stat.search": "Cari:",
+  "stat.settings.title": "Pengaturan StatInspector"
+}
