@@ -1,0 +1,17 @@
+{
+  "stat.clear": "Burahin",
+  "stat.footer.selected": "Napili: {0} na stat",
+  "stat.footer.showing": "Ipinapakita ang {0} na hilera  •  Napili: {1}",
+  "stat.header": "STATS",
+  "stat.hotkey.toggle": "I-toggle ang StatInspector mini-HUD",
+  "stat.hudColumns": "HUD columns:",
+  "stat.loading": "Naglo-load ng mga attribute…",
+  "stat.noneSelected": "Walang napiling stat.",
+  "stat.notInWorld": "Wala sa mundo — hindi available ang mga halaga.",
+  "stat.openSettings": "Buksan ang settings",
+  "stat.reset": "I-reset",
+  "stat.reset.confirm": "I-click muli para kumpirmahin ang reset",
+  "stat.reset.done": "✓ I-reset",
+  "stat.search": "Hanapin:",
+  "stat.settings.title": "Mga Setting ng StatInspector"
+}
