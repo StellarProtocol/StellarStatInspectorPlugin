@@ -7,7 +7,7 @@
   "stat.hudColumns": "HUD 열:",
   "stat.loading": "능력치 불러오는 중…",
   "stat.noneSelected": "선택된 능력치 없음.",
-  "stat.notInWorld": "월드 밖 — 값을 사용할 수 없음.",
+  "stat.notInWorld": "월드 미접속 — 값을 사용할 수 없음.",
   "stat.openSettings": "설정 열기",
   "stat.reset": "초기화",
   "stat.reset.confirm": "다시 클릭하여 초기화 확인",
