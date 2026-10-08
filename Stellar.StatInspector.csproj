@@ -9,7 +9,7 @@
     <NoWarn>CS8632;CS8765</NoWarn>
     <RootNamespace>Stellar.StatInspector</RootNamespace>
     <AssemblyName>Stellar.StatInspector</AssemblyName>
-    <Version>2.1.1</Version>
+    <Version>2.2.0</Version>
     <Deterministic>true</Deterministic>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
@@ -32,5 +32,6 @@
     <EmbeddedResource Include="Lang/th.json" LogicalName="Stellar.StatInspector.Lang.th.json" />
     <EmbeddedResource Include="Lang/id.json" LogicalName="Stellar.StatInspector.Lang.id.json" />
     <EmbeddedResource Include="Lang/fil.json" LogicalName="Stellar.StatInspector.Lang.fil.json" />
+    <EmbeddedResource Include="Lang/ko.json" LogicalName="Stellar.StatInspector.Lang.ko.json" />
   </ItemGroup>
 </Project>
