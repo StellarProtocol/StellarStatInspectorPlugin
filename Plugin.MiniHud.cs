@@ -28,7 +28,7 @@ public sealed partial class Plugin
     {
         var spec = new WindowSpec(
             Id:          "statinspector.mini-hud",
-            Title:       "StatInspector",
+            Title:       _loc.T("stat.miniHud.title"),
             DefaultRect: new WindowRect(1644f, 1192f, _columns * MiniHudColW, 184f),
             Category:    WindowCategory.HUD,
             Style:       WindowPanelStyle.Borderless)   // chrome-less custom overlay (NOT a titled glass panel)
