@@ -3,10 +3,10 @@
   "stat.footer.selected": "선택됨: 능력치 {0}개",
   "stat.footer.showing": "{0}행 표시 중  •  선택됨: {1}",
   "stat.header": "능력치",
-  "stat.hotkey.toggle": "StatInspector 미니 HUD 전환",
+  "stat.hotkey.toggle": "능력치 보기 미니 HUD 전환",
   "stat.hudColumns": "HUD 열:",
   "stat.loading": "능력치 불러오는 중…",
-  "stat.miniHud.title": "능력치 인스펙터",
+  "stat.miniHud.title": "능력치 보기",
   "stat.noneSelected": "선택된 능력치 없음.",
   "stat.notInWorld": "월드 미접속 — 값을 사용할 수 없음.",
   "stat.openSettings": "설정 열기",
@@ -14,5 +14,5 @@
   "stat.reset.confirm": "다시 클릭하여 초기화 확인",
   "stat.reset.done": "✓ 초기화됨",
   "stat.search": "검색:",
-  "stat.settings.title": "능력치 인스펙터 설정"
+  "stat.settings.title": "능력치 보기 설정"
 }
