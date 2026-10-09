@@ -6,6 +6,7 @@
   "stat.hotkey.toggle": "Toggle StatInspector mini-HUD",
   "stat.hudColumns": "HUD columns:",
   "stat.loading": "Loading attributes…",
+  "stat.miniHud.title": "StatInspector",
   "stat.noneSelected": "No stats selected.",
   "stat.notInWorld": "Not in-world — values unavailable.",
   "stat.openSettings": "Open settings",

@@ -6,6 +6,7 @@
   "stat.hotkey.toggle": "สลับมินิ HUD ของ StatInspector",
   "stat.hudColumns": "จำนวนคอลัมน์ HUD:",
   "stat.loading": "กำลังโหลดแอตทริบิวต์…",
+  "stat.miniHud.title": "StatInspector",
   "stat.noneSelected": "ยังไม่ได้เลือกสเตตัส",
   "stat.notInWorld": "ไม่ได้อยู่ในโลก — ไม่มีค่าให้แสดง",
   "stat.openSettings": "เปิดการตั้งค่า",

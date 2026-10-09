@@ -6,6 +6,7 @@
   "stat.hotkey.toggle": "StatInspectorミニHUDの表示切替",
   "stat.hudColumns": "HUD列数:",
   "stat.loading": "属性を読み込み中…",
+  "stat.miniHud.title": "StatInspector",
   "stat.noneSelected": "ステータスが選択されていません。",
   "stat.notInWorld": "ワールド外 — 値を取得できません。",
   "stat.openSettings": "設定を開く",

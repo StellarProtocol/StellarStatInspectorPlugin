@@ -6,6 +6,7 @@
   "stat.hotkey.toggle": "Alihkan mini-HUD StatInspector",
   "stat.hudColumns": "Kolom HUD:",
   "stat.loading": "Memuat atribut…",
+  "stat.miniHud.title": "StatInspector",
   "stat.noneSelected": "Tidak ada statistik yang dipilih.",
   "stat.notInWorld": "Tidak di dalam dunia — nilai tidak tersedia.",
   "stat.openSettings": "Buka pengaturan",

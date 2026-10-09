@@ -6,6 +6,7 @@
   "stat.hotkey.toggle": "I-toggle ang StatInspector mini-HUD",
   "stat.hudColumns": "HUD columns:",
   "stat.loading": "Naglo-load ng mga attribute…",
+  "stat.miniHud.title": "StatInspector",
   "stat.noneSelected": "Walang napiling stat.",
   "stat.notInWorld": "Wala sa mundo — hindi available ang mga halaga.",
   "stat.openSettings": "Buksan ang settings",
