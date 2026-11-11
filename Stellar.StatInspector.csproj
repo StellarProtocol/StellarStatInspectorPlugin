@@ -25,6 +25,13 @@
   <ItemGroup>
     <EmbeddedResource Include="Resources/stat-icon-atlas.png" LogicalName="Stellar.StatInspector.stat-icon-atlas.png" />
     <EmbeddedResource Include="Resources/settings-gear.png" LogicalName="Stellar.StatInspector.settings-gear.png" />
+    <!-- Settings header glyph (flat white bar chart on the live accent tile), pre-drawn + pixel-hinted per size by
+         tools/make-header-icon.py; the window draws the 24 px one inside its 40 px tile. -->
+    <EmbeddedResource Include="Resources/stat-header-16.png" LogicalName="Stellar.StatInspector.stat-header-16.png" />
+    <EmbeddedResource Include="Resources/stat-header-24.png" LogicalName="Stellar.StatInspector.stat-header-24.png" />
+    <EmbeddedResource Include="Resources/stat-header-32.png" LogicalName="Stellar.StatInspector.stat-header-32.png" />
+    <EmbeddedResource Include="Resources/stat-header-64.png" LogicalName="Stellar.StatInspector.stat-header-64.png" />
+    <EmbeddedResource Include="Resources/stat-header-128.png" LogicalName="Stellar.StatInspector.stat-header-128.png" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Lang/en.json" LogicalName="Stellar.StatInspector.Lang.en.json" />

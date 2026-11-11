@@ -26,8 +26,7 @@ public sealed partial class Plugin : IStellarPlugin
     // then fades to neutral over this window.
     private const float DeltaFadeSeconds = 2.0f;
 
-    private const float ResetPromptDurS    = 4.0f;
-    private const float ResetFlashDurS     = 1.5f;
+    private const float ResetPromptDurS    = 4.0f;   // the Settings "Clear all" confirm times out after this
 
     // Starter-list IDs.
     private static readonly int[] StarterAttrIds = { 11011, 11021, 11321, 11331, 11341, 12511 };
@@ -55,7 +54,10 @@ public sealed partial class Plugin : IStellarPlugin
     private readonly IHotkeyAction _toggleAction;
 
     // ---- Selection state (mirrors the IPlayerStats subscription set) -----------------
+    // _hudOrder = the stats on the HUD IN HUD ORDER (persisted as-is, user reorders it by drag); _selected = the same ids
+    // as a set for the O(1) Contains every picker row polls. Mutated together only through Plugin.Selection.cs.
     private readonly HashSet<int> _selected = new();
+    private readonly List<int> _hudOrder = new();
 
     // ---- Mini-HUD grid columns (1..4, user-configurable in settings) -----------------
     private int _columns = 2;
@@ -90,11 +92,6 @@ public sealed partial class Plugin : IStellarPlugin
     private readonly Dictionary<int, string> _disambiguationLabel = new();
     private bool _classificationBuilt;
 
-    // ---- Reset-to-defaults state machine ---------------------------------------------
-    private enum ResetState { Idle, Prompting, Flashing }
-    private ResetState _resetState;
-    private float _resetStateChangedAt;
-
     // ---- Settings-window visibility persistence ---------------------------------------
     // The framework persists window visibility only on drag, and the GlassMenu chrome ✕
     // just calls Hide() with no save. So we mirror the window's visibility into our own
@@ -125,6 +122,7 @@ public sealed partial class Plugin : IStellarPlugin
 
         // uGUI window toolkit (Phase E — both surfaces migrated off IMGUI). The trees are built once;
         // their Funcs re-pull live state on the framework's capped refresh.
+        _tipWindow      = BuildAndRegisterTip();         // Plugin.Settings.Help.cs — before Settings (its "?" reads it)
         _settingsWindow = BuildAndRegisterSettings();   // Plugin.Settings.cs
         _miniHudWindow  = BuildAndRegisterMiniHud();     // Plugin.MiniHud.cs
 
@@ -143,9 +141,12 @@ public sealed partial class Plugin : IStellarPlugin
     {
         _services.Config.SectionChanged -= OnConfigChanged;
         _services.Framework.Update -= OnUpdate;
+        FlushHudBgSave();   // a background-slider drag released just before unload still persists
+        FlushOrderSave();   // … and so does a HUD reorder (Plugin.Selection.cs)
 
         _toggleAction.Dispose();
         _settingsWindow.Remove();
+        _tipWindow.Remove();
         _miniHudWindow.Remove();
 
         // Unsubscribe but DO NOT clear persisted selection.
@@ -175,13 +176,20 @@ public sealed partial class Plugin : IStellarPlugin
         }
         TrackStatChanges();
         RefreshMiniSnapshot();
-        // Settings picker upkeep — only while the window is shown (the tree has no per-frame entry now).
+        // Flattened picker rows: dirty-flag gated (a no-op almost every frame), kept current while the Settings window
+        // is hidden too so its framework pre-build fill (WindowSpec.Prebuild) lays out real rows, not an empty list.
+        RebuildSnapshotIfDirty();
+        // Settings picker upkeep — only while the window is shown (peek subscriptions must not run while hidden).
         if (_settingsWindow.IsShown)
         {
-            RebuildSnapshotIfDirty();
-            RefreshWindowPeek();
-            AdvanceResetState(_services.Framework.TimeNow);
+            // The HUD order tab shows only picked (already subscribed) stats → no display-only peeks while it's up.
+            if (_hudTab) ClearPeek(); else RefreshWindowPeek();
+            AdvanceClearConfirm(_services.Framework.TimeNow);   // Plugin.Settings.Feedback.cs
         }
+        SettingsCentreTick();   // Plugin.Settings.Open.cs — the open-centred burst (a no-op once it ends)
+        TipRepositionTick();    // Plugin.Settings.Help.cs — anchors the help popover under its "?" on open
+        HudBgSaveTick();        // Plugin.Settings.Background.cs — debounced config write after a slider drag
+        OrderSaveTick();        // Plugin.Selection.cs — debounced config write after a HUD reorder
         SyncSettingsVisibility();
     }
 
@@ -191,7 +199,12 @@ public sealed partial class Plugin : IStellarPlugin
         var vis = _settingsWindow.IsShown;
         if (vis == _lastSettingsVisible) return;
         _lastSettingsVisible = vis;
-        if (!vis) ClearPeek();   // window closed — stop sampling display-only rows
+        if (!vis)
+        {
+            ClearPeek();             // window closed — stop sampling display-only rows
+            CloseTip();              // its help popover goes with it
+            _clearConfirmAt = -1f;   // and a pending Clear-all confirm is dropped
+        }
         _windowSection.Set("settings_visible", vis);
         _windowSection.Save();
     }
@@ -215,18 +228,14 @@ public sealed partial class Plugin : IStellarPlugin
 
     private void LoadConfig()
     {
-        // Selection. Empty/absent → use starter list as the in-memory default.
+        // Selection, in the stored order (= the HUD order). Empty/absent → use starter list as the in-memory default.
+        // Existing configs were saved id-sorted, so nothing moves until the user reorders.
         var saved = _statSection.Get<int[]>("selected", null) ?? Array.Empty<int>();
-        if (saved.Length == 0)
-        {
-            foreach (var id in StarterAttrIds) _selected.Add(id);
-        }
-        else
-        {
-            foreach (var id in saved) _selected.Add(id);
-        }
+        SetSelectionFrom(saved.Length == 0 ? StarterAttrIds : saved);   // Plugin.Selection.cs — drops dupes / invalid
 
         _columns = Math.Clamp(_windowSection.Get<int>("minihud_columns", 2), 1, 4);
+        LoadHudBgOpacity();   // Plugin.Settings.Background.cs — mini-HUD background, default 0 (none)
+        _hudTab = _windowSection.Get<bool>(StatsTabKey, false);   // Plugin.Settings.Order.cs — STATS tab, default All stats
 
         // Group collapse defaults: Offensive + Defensive expanded; rest collapsed.
         _groupCollapsed["offensive"]  = _windowSection.Get<bool>("group_offensive_collapsed",  false);
@@ -261,23 +270,6 @@ public sealed partial class Plugin : IStellarPlugin
                 // never fail startup on a diagnostic check.
             }
         }
-    }
-
-    private void TogglePick(int attrId, bool wanted)
-    {
-        _peek.Remove(attrId);   // ownership moves to (or away from) _selected
-        if (wanted)
-        {
-            if (_selected.Add(attrId))
-                _services.PlayerStats.Subscribe(attrId);
-        }
-        else
-        {
-            if (_selected.Remove(attrId))
-                _services.PlayerStats.Unsubscribe(attrId);
-            // Re-peeked next frame if still visible, so the value keeps showing.
-        }
-        PersistSelected();
     }
 
     private void SetColumns(int n)
@@ -332,16 +324,6 @@ public sealed partial class Plugin : IStellarPlugin
         _peek.Clear();
     }
 
-    private void DoReset()
-    {
-        foreach (var id in _selected.ToArray())
-        {
-            _services.PlayerStats.Unsubscribe(id);
-        }
-        _selected.Clear();
-        PersistSelected();
-    }
-
     /// <summary>
     /// Resolves the display name for an attribute. Prefers <c>AttributeProfile.Name</c> — the game's
     /// short attribute name read as a LOCALIZED string (Japanese on a JP client, e.g. 会心 / 火属性強度 /
@@ -378,43 +360,5 @@ public sealed partial class Plugin : IStellarPlugin
         var i = StatIconAtlas.IndexFor(name ?? string.Empty);
         if (i != 0) _iconIndexOf[attrId] = i;   // cache only a real hit; keep retrying the placeholder
         return i;
-    }
-
-    private void PersistSelected()
-    {
-        var arr = _selected.ToArray();
-        Array.Sort(arr);
-        _statSection.Set("selected", arr);
-        _statSection.SaveQuiet();
-    }
-
-    private void OnConfigChanged(string sectionName)
-    {
-        if (sectionName != "statinspector")
-        {
-            // window section may have been edited externally; framework owns rect.
-            return;
-        }
-
-        var arr = _statSection.Get<int[]>("selected", null) ?? Array.Empty<int>();
-        var disk = new HashSet<int>(arr);
-
-        var toAdd = new List<int>();
-        foreach (var id in disk) if (!_selected.Contains(id)) toAdd.Add(id);
-        var toRemove = new List<int>();
-        foreach (var id in _selected) if (!disk.Contains(id)) toRemove.Add(id);
-
-        foreach (var id in toAdd)
-        {
-            _services.PlayerStats.Subscribe(id);
-            _selected.Add(id);
-        }
-        foreach (var id in toRemove)
-        {
-            _services.PlayerStats.Unsubscribe(id);
-            _selected.Remove(id);
-        }
-
-        LogReconciliation(toAdd.Count, toRemove.Count);
     }
 }
