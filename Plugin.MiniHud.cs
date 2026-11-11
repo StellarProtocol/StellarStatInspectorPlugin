@@ -18,7 +18,11 @@ namespace Stellar.StatInspector;
 /// </summary>
 public sealed partial class Plugin
 {
-    private const float MiniHudColW = 178f;   // per-column width → window width = columns × this
+    // Per-column width → window width = columns × this: icon 18 + label 135 + value 52 + 2×4 gaps ≈ 213, plus slack.
+    // Not Resizable, so the Borderless root content-fits its width every build (a saved layout only restores the
+    // POSITION — WindowRenderer.SetRect applies size to Resizable windows only); widening needs no layout reset.
+    private const float MiniHudColW = 221f;
+    private const float MiniHudLabelW = 135f;
     private const int   MiniHudMaxCells = 64; // fixed cell pool (the selectable set never exceeds this in practice)
 
     // Selected ids, sorted; refreshed on Update so the cell Funcs never allocate/scan.
@@ -101,11 +105,15 @@ public sealed partial class Plugin
     {
         // Fixed-width icon cell — as the first child of a grid-cell Row, a bare SpriteElement collapses to 0;
         // a CellElement pins its slot so the 16px icon renders.
-        // Fits the wide grid cell (CellWidth = MiniHudColW): icon 18 + label 92 + value 52 + gaps ≈ 170. NO
+        // Fits the wide grid cell (CellWidth = MiniHudColW): icon 18 + label 135 + value 52 + gaps ≈ 213. NO
         // Spacer (the Borderless fitter fights a flexible spacer). Delta direction is shown by the value COLOUR
         // (green up / red down) — the inline "▲ N" number is dropped (also dodges the ▲ font-risk glyph).
         new CellElement(new SpriteElement(() => _iconAtlas.Png, IconUvForSlot(slot), 16, 16, UvFunc: () => IconUvForSlot(slot)), Width: 18f),
-        new TextElement(() => SlotLabel(slot), () => MutedRgba(), Width: 92f, Shadow: true),
+        // MaxLines = 1: the framework cuts an over-wide name with "…" at the label's real laid-out width (re-fitted
+        // only when the string/width changes). Works here although the doc says "ignored on Shadow": that applies to
+        // the TMP styled path; a plain Shadow label on a Menu-surface window takes the legacy Text path, whose
+        // TextBinding still honours MaxLines (UGuiPrimitives.CapLines). Width-based, so CJK names cut correctly too.
+        new TextElement(() => SlotLabel(slot), () => MutedRgba(), Width: MiniHudLabelW, Shadow: true) { MaxLines = 1 },
         new TextElement(() => SlotValue(slot), () => SlotDeltaColor(slot), Width: 52f, Align: TextAlign.Right, Shadow: true),
     }, Gap: 4f);
 
@@ -153,12 +161,18 @@ public sealed partial class Plugin
         return 1f - age / DeltaFadeSeconds;
     }
 
+    // Full label (truncation is the label TextElement's MaxLines). Cached per attrId once the name resolves, so the
+    // per-refresh cell Func doesn't rebuild the "Base "/"Total " disambiguation string every poll.
+    private readonly Dictionary<int, string> _labelOf = new();
+
     private string ResolveLabel(int attrId)
     {
+        if (_labelOf.TryGetValue(attrId, out var cached)) return cached;
         var label = ResolveAttrName(attrId);
-        if (string.IsNullOrEmpty(label)) { LogOrphanAttr(attrId); return "#" + attrId; }
+        if (string.IsNullOrEmpty(label)) { LogOrphanAttr(attrId); return "#" + attrId; }   // not cached: retried until GameData names it
         if (_disambiguationLabel.TryGetValue(attrId, out var prefix)) label = prefix + " " + label;
-        return label.Length > 15 ? label.Substring(0, 14) + "…" : label;   // fits the 92px multi-col label cell
+        if (_classificationBuilt) _labelOf[attrId] = label;   // the Base/Total prefixes exist only once classified
+        return label;
     }
 
     private void ToggleSettingsFromGear()
