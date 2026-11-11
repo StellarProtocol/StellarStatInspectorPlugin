@@ -53,9 +53,10 @@ public sealed partial class Plugin
             // it off-screen once in the world, so its first drawn apply no longer builds the grid (~45 ms firstshow).
             // The cell Funcs only read _miniSnapshot + IPlayerStats (guarded), so running hidden is safe. Signature =
             // which body branch it shows (stats in → grid, N cells), so a fill that ran before the stats arrived or
-            // with nothing selected is redone when that changes.
+            // with nothing selected is redone when that changes (and on entering/leaving the layout-edit preview).
+            // ShouldRender needs no edit-mode term: the framework force-shows EditModeDragOnly windows while editing.
             Prebuild                = true,
-            PrebuildSignature       = () => HashCode.Combine(_services.PlayerStats.IsAvailable, _miniSnapshot.Count),
+            PrebuildSignature       = () => HashCode.Combine(_services.PlayerStats.IsAvailable, _miniSnapshot.Count, LayoutEditing),
         };
         return _services.Windows.Register(new WindowRegistration(spec, BuildMiniRoot()));
     }
@@ -69,7 +70,8 @@ public sealed partial class Plugin
         // width, so without this the 16px gear sprite stretches into a full-width streak.
         var gear = new CellElement(
             new SelectableElement(
-                new ImageElement(() => _iconAtlas.GearPng, 15, 15),   // clean standalone cog (not the emoji atlas cell)
+                // Clean standalone cog (not the emoji atlas cell); dimmed + inert while layout-editing.
+                new ImageElement(() => _iconAtlas.GearPng, 15, 15) { Tint = () => LayoutEditing ? GearDimmed : null },
                 OnClick: ToggleSettingsFromGear),
             Width: 26f);
         // Thin titled header strip (design D): a faint "STATS" caption (left) + gear (right) over a divider, so
@@ -84,17 +86,20 @@ public sealed partial class Plugin
         var cells = new HudElement[MiniHudMaxCells];
         for (var i = 0; i < MiniHudMaxCells; i++) { var idx = i; cells[idx] = BuildStatCell(idx); }
         // Wide grid cells (the framework default 120px is too tight for icon+label+value) so column names read.
-        var grid = new ListElement(() => _miniSnapshot.Count, cells, Columns: _columns, CellWidth: MiniHudColW, CellHeight: 24f);
+        // Count is the live selection, or the sample set during the layout-edit preview (Plugin.MiniHud.Preview.cs).
+        var grid = new ListElement(MiniCellCount, cells, Columns: _columns, CellWidth: MiniHudColW, CellHeight: 24f);
 
         var empty = new ColumnElement(new HudElement[]
         {
             new TextElement(() => _loc.T("stat.noneSelected"), () => MutedRgba(), Shadow: true),
             new ButtonElement(() => _loc.T("stat.openSettings"), () => _settingsWindow.SetVisible(true)),
         });
-        var populated = new ConditionalElement(() => _miniSnapshot.Count > 0, grid, empty);
+        // In the edit preview MiniCellCount is never 0 and ShowingSample covers "stats unavailable", so neither the CTA
+        // nor the not-in-world text shows while editing — the outline is always the real grid's size.
+        var populated = new ConditionalElement(() => MiniCellCount() > 0, grid, empty);
 
         var notInWorld = new TextElement(() => _loc.T("stat.notInWorld"), () => MutedRgba(), Shadow: true);
-        var body = new ConditionalElement(() => _services.PlayerStats.IsAvailable, populated, notInWorld);
+        var body = new ConditionalElement(() => _services.PlayerStats.IsAvailable || ShowingSample, populated, notInWorld);
 
         // Tight gap (default Column gap is the 12px section spacing — too airy around the header divider here).
         return new ColumnElement(new HudElement[] { header, new SeparatorElement(), body }, Gap: 2f);
@@ -117,7 +122,11 @@ public sealed partial class Plugin
         new TextElement(() => SlotValue(slot), () => SlotDeltaColor(slot), Width: 52f, Align: TextAlign.Right, Shadow: true),
     }, Gap: 4f);
 
-    private int AttrAt(int slot) => slot < _miniSnapshot.Count ? _miniSnapshot[slot] : -1;
+    private int AttrAt(int slot)
+    {
+        if (ShowingSample) return slot < SampleAttrIds.Length ? SampleAttrIds[slot] : -1;
+        return slot < _miniSnapshot.Count ? _miniSnapshot[slot] : -1;
+    }
 
     private AbsUv IconUvForSlot(int slot)
     {
@@ -125,10 +134,16 @@ public sealed partial class Plugin
         return StatIconAtlas.UvRectFor(id >= 0 ? IconIndexFor(id) : 0);
     }
 
-    private string SlotLabel(int slot) { var id = AttrAt(slot); return id >= 0 ? ResolveLabel(id) : string.Empty; }
+    private string SlotLabel(int slot)
+    {
+        if (ShowingSample) return SampleLabel(slot);
+        var id = AttrAt(slot);
+        return id >= 0 ? ResolveLabel(id) : string.Empty;
+    }
 
     private string SlotValue(int slot)
     {
+        if (ShowingSample) return SampleValue(slot);
         var id = AttrAt(slot);
         if (id < 0) return string.Empty;
         var raw = _services.PlayerStats.TryGetAttribute(id);
@@ -140,11 +155,12 @@ public sealed partial class Plugin
     {
         var id = AttrAt(slot);
         if (id < 0) return null;
+        if (LayoutEditing) return White;   // edit preview: no green/red flash while arranging
         var fade = DeltaFade(id, out var dir);
         var t = _services.Theme.Colors;
         // White (not the muted cream) — the borderless HUD has no background, so crisp white + the dark text
         // outline reads cleanly over any world background. Delta still flashes green/red.
-        if (dir == 0 || fade <= 0f) return new ColorRgba(1f, 1f, 1f, 1f);
+        if (dir == 0 || fade <= 0f) return White;
         var a = dir > 0 ? t.HpFill : t.Warning;
         var b = t.HudText;
         return new ColorRgba(Lerp(b.R, a.R, fade), Lerp(b.G, a.G, fade), Lerp(b.B, a.B, fade), 1f);
@@ -177,6 +193,7 @@ public sealed partial class Plugin
 
     private void ToggleSettingsFromGear()
     {
+        if (LayoutEditing) return;   // the gear is dimmed + inert while arranging (edit-mode clicks are for dragging)
         _settingsWindow.SetVisible(!_settingsWindow.IsShown);
         _windowSection.Set("settings_visible", _settingsWindow.IsShown);
         _windowSection.Save();
@@ -184,7 +201,10 @@ public sealed partial class Plugin
 
     // White — the borderless mini-HUD has no background, so crisp white labels + the dark text outline read
     // cleanly over any world background (the muted/cream theme colour washed out).
-    private static ColorRgba MutedRgba() => new(1f, 1f, 1f, 1f);
+    private static ColorRgba MutedRgba() => White;
+
+    private static readonly ColorRgba White = new(1f, 1f, 1f, 1f);
+    private static readonly ColorRgba GearDimmed = new(1f, 1f, 1f, 0.35f);   // gear tint while layout-editing
 
     private static float Lerp(float from, float to, float t) => from + (to - from) * t;
 
