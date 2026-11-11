@@ -2,6 +2,7 @@
   "stat.cancel": "취소",
   "stat.clearAll": "모두 지우기",
   "stat.clearAll.confirm": "{0}개를 모두 제거할까요?",
+  "stat.clearAll.confirm.one": "{0}개를 제거할까요?",
   "stat.clearAll.yes": "모두 제거",
   "stat.columns": "열 수",
   "stat.feedback.added": "✓ “{0}” HUD에 추가 · {1}",
@@ -26,8 +27,12 @@
   "stat.section.stats": "능력치",
   "stat.section.stats.hint": "능력치를 클릭하면 HUD에 표시",
   "stat.section.stats.matches": "{0}개 일치",
+  "stat.section.stats.matches.one": "{0}개 일치",
   "stat.settings.title": "능력치 보기 설정",
   "stat.status": "HUD에 능력치 {0}개 · {1}열",
   "stat.status.loading": "게임 데이터 불러오는 중…",
+  "stat.status.oneBoth": "HUD에 능력치 {0}개 · {1}열",
+  "stat.status.oneColumn": "HUD에 능력치 {0}개 · {1}열",
+  "stat.status.oneStat": "HUD에 능력치 {0}개 · {1}열",
   "stat.tool.title": "능력치 보기"
 }

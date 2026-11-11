@@ -2,6 +2,7 @@
   "stat.cancel": "Kanselahin",
   "stat.clearAll": "Burahin lahat",
   "stat.clearAll.confirm": "Alisin lahat ng {0} sa HUD?",
+  "stat.clearAll.confirm.one": "Alisin ang {0} stat sa HUD?",
   "stat.clearAll.yes": "Alisin lahat",
   "stat.columns": "Mga column",
   "stat.feedback.added": "✓ Idinagdag ang “{0}” sa HUD · {1}",
@@ -26,8 +27,12 @@
   "stat.section.stats": "Stats",
   "stat.section.stats.hint": "i-click ang stat para ipakita sa HUD",
   "stat.section.stats.matches": "{0} tugma",
+  "stat.section.stats.matches.one": "{0} tugma",
   "stat.settings.title": "Mga Setting ng StatInspector",
   "stat.status": "{0} stat sa HUD · {1} column",
   "stat.status.loading": "Nilo-load ang game data…",
+  "stat.status.oneBoth": "{0} stat sa HUD · {1} column",
+  "stat.status.oneColumn": "{0} stat sa HUD · {1} column",
+  "stat.status.oneStat": "{0} stat sa HUD · {1} column",
   "stat.tool.title": "Stat Inspector"
 }

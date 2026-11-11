@@ -2,6 +2,7 @@
   "stat.cancel": "Cancel",
   "stat.clearAll": "Clear all",
   "stat.clearAll.confirm": "Remove all {0} from the HUD?",
+  "stat.clearAll.confirm.one": "Remove {0} stat from the HUD?",
   "stat.clearAll.yes": "Remove all",
   "stat.columns": "Columns",
   "stat.feedback.added": "✓ Added “{0}” to the HUD · {1}",
@@ -26,8 +27,12 @@
   "stat.section.stats": "Stats",
   "stat.section.stats.hint": "click a stat to show it on the HUD",
   "stat.section.stats.matches": "{0} matches",
+  "stat.section.stats.matches.one": "{0} match",
   "stat.settings.title": "StatInspector Settings",
   "stat.status": "{0} stats on the HUD · {1} columns",
   "stat.status.loading": "Loading game data…",
+  "stat.status.oneBoth": "{0} stat on the HUD · {1} column",
+  "stat.status.oneColumn": "{0} stats on the HUD · {1} column",
+  "stat.status.oneStat": "{0} stat on the HUD · {1} columns",
   "stat.tool.title": "Stat Inspector"
 }

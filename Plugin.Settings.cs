@@ -147,17 +147,25 @@ public sealed partial class Plugin
     private readonly FmtCache _statusFmt = new();
     private readonly FmtCache _matchesFmt = new();
 
-    // The header's live status (the ONE status builder): "{N} stats on the HUD · {C} columns", or loading.
-    private string SettingsStatus() => _classificationBuilt
-        ? _statusFmt.Get(_loc.T("stat.status"), _selected.Count, _columns)
-        : _loc.T("stat.status.loading");
+    // The header's live status (the ONE status builder): "{N} stats on the HUD · {C} columns", or loading. Each count
+    // can be singular, so one full template per combination (no runtime concatenation → FmtCache stays alloc-free).
+    private string SettingsStatus()
+    {
+        if (!_classificationBuilt) return _loc.T("stat.status.loading");
+        int n = _selected.Count;
+        var key = n == 1
+            ? (_columns == 1 ? "stat.status.oneBoth" : "stat.status.oneStat")
+            : (_columns == 1 ? "stat.status.oneColumn" : "stat.status");
+        return _statusFmt.Get(_loc.T(key), n, _columns);
+    }
 
     // STATS caption hint: how-to while browsing, the match count while searching, nothing while loading.
     private string StatsHint()
     {
         if (!_classificationBuilt) return string.Empty;
         return _searching
-            ? _matchesFmt.Get(_loc.T("stat.section.stats.matches"), _matchCount)
+            ? _matchesFmt.Get(_loc.T(_matchCount == 1 ? "stat.section.stats.matches.one" : "stat.section.stats.matches"),
+                _matchCount)
             : _loc.T("stat.section.stats.hint");
     }
 

@@ -2,6 +2,7 @@
   "stat.cancel": "Batal",
   "stat.clearAll": "Hapus semua",
   "stat.clearAll.confirm": "Hapus semua {0} dari HUD?",
+  "stat.clearAll.confirm.one": "Hapus {0} statistik dari HUD?",
   "stat.clearAll.yes": "Hapus semua",
   "stat.columns": "Kolom",
   "stat.feedback.added": "✓ “{0}” ditambahkan ke HUD · {1}",
@@ -26,8 +27,12 @@
   "stat.section.stats": "Statistik",
   "stat.section.stats.hint": "klik statistik untuk menampilkannya di HUD",
   "stat.section.stats.matches": "{0} cocok",
+  "stat.section.stats.matches.one": "{0} cocok",
   "stat.settings.title": "Pengaturan StatInspector",
   "stat.status": "{0} statistik di HUD · {1} kolom",
   "stat.status.loading": "Memuat data game…",
+  "stat.status.oneBoth": "{0} statistik di HUD · {1} kolom",
+  "stat.status.oneColumn": "{0} statistik di HUD · {1} kolom",
+  "stat.status.oneStat": "{0} statistik di HUD · {1} kolom",
   "stat.tool.title": "Stat Inspector"
 }

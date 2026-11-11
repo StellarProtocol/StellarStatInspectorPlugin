@@ -58,7 +58,9 @@ public sealed partial class Plugin
 
     private ColorRgba? FooterTextColor() => FooterNoteShowing() ? SuccessColor() : MutedColor();
 
-    private string ConfirmQuestion() => _confirmFmt.Get(_loc.T("stat.clearAll.confirm"), _selected.Count);
+    // "Remove all 1 from the HUD?" reads wrong → a singular template for one stat.
+    private string ConfirmQuestion() => _confirmFmt.Get(
+        _loc.T(_selected.Count == 1 ? "stat.clearAll.confirm.one" : "stat.clearAll.confirm"), _selected.Count);
 
     // ── row flash ─────────────────────────────────────────────────────────────────────────────────────────────────
     private bool RowFlashing(int slot)
