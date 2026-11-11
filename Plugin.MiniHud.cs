@@ -150,7 +150,7 @@ public sealed partial class Plugin
         return raw.HasValue ? FormatValue(id, raw.Value) : "—";   // delta direction is shown via SlotDeltaColor
     }
 
-    // Delta-flash: neutral HudText when no recent change; otherwise lerp HudText→HpFill (up)/Warning (down) by fade.
+    // Delta-flash: neutral HudText when no recent change; otherwise lerp HudText→Success (up)/Danger (down) by fade.
     private ColorRgba? SlotDeltaColor(int slot)
     {
         var id = AttrAt(slot);
@@ -161,7 +161,7 @@ public sealed partial class Plugin
         // White (not the muted cream) — the borderless HUD has no background, so crisp white + the dark text
         // outline reads cleanly over any world background. Delta still flashes green/red.
         if (dir == 0 || fade <= 0f) return White;
-        var a = dir > 0 ? t.HpFill : t.Warning;
+        var a = dir > 0 ? t.Success : t.Danger;   // theme status colours (IThemeStatusColors, fw 2.30.0)
         var b = t.HudText;
         return new ColorRgba(Lerp(b.R, a.R, fade), Lerp(b.G, a.G, fade), Lerp(b.B, a.B, fade), 1f);
     }
