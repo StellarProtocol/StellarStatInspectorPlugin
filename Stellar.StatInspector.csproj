@@ -15,9 +15,9 @@
   </PropertyGroup>
   <ItemGroup>
     <!-- i18n P2: consumes IPluginServices.Localization (framework 2.1.0). -->
-    <PackageReference Include="Stellar.Abstractions"       Version="2.1.0" />
-    <PackageReference Include="Stellar.PluginContracts"    Version="2.0.0" />
-    <PackageReference Include="Stellar.Plugin.InteropRefs" Version="2.0.0" />
+    <PackageReference Include="Stellar.Abstractions"       Version="2.30.0" />
+    <PackageReference Include="Stellar.PluginContracts"    Version="2.30.0" />
+    <PackageReference Include="Stellar.Plugin.InteropRefs" Version="2.30.0" />
   </ItemGroup>
 
   <!-- Bundled stat-icon atlas + settings-gear (StatIconAtlas reads these by LogicalName). Without them the

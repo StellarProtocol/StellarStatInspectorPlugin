@@ -45,6 +45,13 @@ public sealed partial class Plugin
             // (v2 render-gate; replaces the removed HideUntilInWorld / AutoHideBehindGameMenus bools).
             ShouldRender            = () => _services.ClientState.Phase == GamePhase.World
                                             && (_services.ClientState.UiState & (GameUIState.Blocking | GameUIState.AnyMenu)) == 0,
+            // Framework pre-build (fw 2.30.0): while a menu holds it hidden and it was never drawn, the framework fills
+            // it off-screen once in the world, so its first drawn apply no longer builds the grid (~45 ms firstshow).
+            // The cell Funcs only read _miniSnapshot + IPlayerStats (guarded), so running hidden is safe. Signature =
+            // which body branch it shows (stats in → grid, N cells), so a fill that ran before the stats arrived or
+            // with nothing selected is redone when that changes.
+            Prebuild                = true,
+            PrebuildSignature       = () => HashCode.Combine(_services.PlayerStats.IsAvailable, _miniSnapshot.Count),
         };
         return _services.Windows.Register(new WindowRegistration(spec, BuildMiniRoot()));
     }
