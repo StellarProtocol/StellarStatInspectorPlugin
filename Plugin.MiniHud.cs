@@ -42,6 +42,8 @@ public sealed partial class Plugin
             // SetVisiblePersist. The old private "minihud_visible" key desynced — it was read here but no longer
             // written, so a stale/false value left the HUD permanently hidden at start, which (never mounting)
             // also stopped the saved position from restoring and let the show-path clobber it with DefaultRect.
+            // Live-localized title (layout editor outline label); Title stays the fallback.
+            TitleProvider           = () => _loc.T("stat.miniHud.title"),
             StartVisible            = true,
             Draggable               = true,   // required so BuildChrome registers the (edit-only) whole-frame drag
             EditModeDragOnly        = true,   // gameplay overlay: moves only in layout edit-mode (Shift+`)

@@ -33,6 +33,7 @@ public sealed partial class Plugin
             Category:    WindowCategory.Tools,
             Style:       WindowPanelStyle.GlassMenu)
         {
+            TitleProvider = () => _loc.T("stat.settings.title"),   // live-localized; Title stays the fallback
             StartVisible = _windowSection.Get<bool>("settings_visible", false),
             Draggable    = true,
             Closable     = true,
