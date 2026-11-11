@@ -4,8 +4,9 @@ using Stellar.Abstractions.Domain;
 namespace Stellar.StatInspector;
 
 /// <summary>
-/// Opening / closing the Settings window, house style: open = show → <c>BringToFront()</c> → centre on the mini-HUD
-/// (the opener) for a short burst of ticks. Always fronted: the help popover is fronted too, and <c>ZFront</c> is
+/// Opening / closing the Settings window, house style: open = show → <c>BringToFront()</c> → centre on the SCREEN for
+/// a short burst of ticks. Not on the mini-HUD (the opener), unlike the usual OpenCentred rule: Settings is where you
+/// pick the HUD's stats, so centring on the HUD covered the very thing being edited (user decision 2026-11-12). Always fronted: the help popover is fronted too, and <c>ZFront</c> is
 /// sticky across hide/show (WindowBuilder-Patterns §"ZFront is STICKY", CLAUDE.md Rule 5 exception), so every open
 /// path — the HUD gear and the HUD's "Open settings" button — goes through <see cref="OpenSettings"/>.
 /// The burst is the Dungeon Confirm recipe (StellarDungeonHubPlugin Plugin.DungeonConfirm.Centre.cs): a SetRect right
@@ -60,8 +61,8 @@ public sealed partial class Plugin
         CentreSettingsNow();
     }
 
-    // Centre the Settings window on the mini-HUD's current rect (canvas units), or on the screen when the HUD isn't
-    // shown / laid out; clamped on-screen and floored to whole units. SetRect only when off target.
+    // Centre the Settings window on the screen (canvas units), clamped on-screen and floored to whole units.
+    // SetRect only when off target.
     private void CentreSettingsNow()
     {
         if (!_settingsWindow.IsShown) return;   // not mounted yet: Rect is the DefaultRect, SetRect would be ignored
@@ -72,8 +73,6 @@ public sealed partial class Plugin
         float w = r.Width > 1f ? r.Width : SettingsWindowWidth;
         float h = r.Height > 1f ? r.Height : SettingsWindowHeight;
         float cx = cw / 2f, cy = ch / 2f;
-        if (_miniHudWindow.IsShown && _miniHudWindow.Rect is { Width: > 1f, Height: > 1f } hud)
-        { cx = hud.X + hud.Width / 2f; cy = hud.Y + hud.Height / 2f; }
         float x = MathF.Floor(MathF.Max(0f, MathF.Min(cx - w / 2f, cw - w)));
         float y = MathF.Floor(MathF.Max(0f, MathF.Min(cy - h / 2f, ch - h)));
         if (Math.Abs(r.X - x) >= 0.5f || Math.Abs(r.Y - y) >= 0.5f) _settingsWindow.SetRect(new WindowRect(x, y, w, h));
