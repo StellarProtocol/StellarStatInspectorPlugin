@@ -26,8 +26,7 @@ public sealed partial class Plugin : IStellarPlugin
     // then fades to neutral over this window.
     private const float DeltaFadeSeconds = 2.0f;
 
-    private const float ResetPromptDurS    = 4.0f;
-    private const float ResetFlashDurS     = 1.5f;
+    private const float ResetPromptDurS    = 4.0f;   // the Settings "Clear all" confirm times out after this
 
     // Starter-list IDs.
     private static readonly int[] StarterAttrIds = { 11011, 11021, 11321, 11331, 11341, 12511 };
@@ -90,11 +89,6 @@ public sealed partial class Plugin : IStellarPlugin
     private readonly Dictionary<int, string> _disambiguationLabel = new();
     private bool _classificationBuilt;
 
-    // ---- Reset-to-defaults state machine ---------------------------------------------
-    private enum ResetState { Idle, Prompting, Flashing }
-    private ResetState _resetState;
-    private float _resetStateChangedAt;
-
     // ---- Settings-window visibility persistence ---------------------------------------
     // The framework persists window visibility only on drag, and the GlassMenu chrome ✕
     // just calls Hide() with no save. So we mirror the window's visibility into our own
@@ -125,6 +119,7 @@ public sealed partial class Plugin : IStellarPlugin
 
         // uGUI window toolkit (Phase E — both surfaces migrated off IMGUI). The trees are built once;
         // their Funcs re-pull live state on the framework's capped refresh.
+        _tipWindow      = BuildAndRegisterTip();         // Plugin.Settings.Help.cs — before Settings (its "?" reads it)
         _settingsWindow = BuildAndRegisterSettings();   // Plugin.Settings.cs
         _miniHudWindow  = BuildAndRegisterMiniHud();     // Plugin.MiniHud.cs
 
@@ -146,6 +141,7 @@ public sealed partial class Plugin : IStellarPlugin
 
         _toggleAction.Dispose();
         _settingsWindow.Remove();
+        _tipWindow.Remove();
         _miniHudWindow.Remove();
 
         // Unsubscribe but DO NOT clear persisted selection.
@@ -182,8 +178,10 @@ public sealed partial class Plugin : IStellarPlugin
         if (_settingsWindow.IsShown)
         {
             RefreshWindowPeek();
-            AdvanceResetState(_services.Framework.TimeNow);
+            AdvanceClearConfirm(_services.Framework.TimeNow);   // Plugin.Settings.Feedback.cs
         }
+        SettingsCentreTick();   // Plugin.Settings.Open.cs — the open-centred burst (a no-op once it ends)
+        TipRepositionTick();    // Plugin.Settings.Help.cs — anchors the help popover under its "?" on open
         SyncSettingsVisibility();
     }
 
@@ -193,7 +191,12 @@ public sealed partial class Plugin : IStellarPlugin
         var vis = _settingsWindow.IsShown;
         if (vis == _lastSettingsVisible) return;
         _lastSettingsVisible = vis;
-        if (!vis) ClearPeek();   // window closed — stop sampling display-only rows
+        if (!vis)
+        {
+            ClearPeek();             // window closed — stop sampling display-only rows
+            CloseTip();              // its help popover goes with it
+            _clearConfirmAt = -1f;   // and a pending Clear-all confirm is dropped
+        }
         _windowSection.Set("settings_visible", vis);
         _windowSection.Save();
     }
@@ -268,6 +271,7 @@ public sealed partial class Plugin : IStellarPlugin
     private void TogglePick(int attrId, bool wanted)
     {
         _peek.Remove(attrId);   // ownership moves to (or away from) _selected
+        _selVersion++;          // Settings group headers recount their "selected / total"
         if (wanted)
         {
             if (_selected.Add(attrId))
@@ -341,6 +345,7 @@ public sealed partial class Plugin : IStellarPlugin
             _services.PlayerStats.Unsubscribe(id);
         }
         _selected.Clear();
+        _selVersion++;
         PersistSelected();
     }
 
@@ -417,6 +422,7 @@ public sealed partial class Plugin : IStellarPlugin
             _selected.Remove(id);
         }
 
+        if (toAdd.Count + toRemove.Count > 0) _selVersion++;
         LogReconciliation(toAdd.Count, toRemove.Count);
     }
 }

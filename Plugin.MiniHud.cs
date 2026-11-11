@@ -94,7 +94,7 @@ public sealed partial class Plugin
         var empty = new ColumnElement(new HudElement[]
         {
             new TextElement(() => _loc.T("stat.noneSelected"), () => MutedRgba(), Shadow: true),
-            new ButtonElement(() => _loc.T("stat.openSettings"), () => _settingsWindow.SetVisible(true)),
+            new ButtonElement(() => _loc.T("stat.openSettings"), OpenSettings),   // Plugin.Settings.Open.cs (fronted + centred)
         });
         // In the edit preview MiniCellCount is never 0 and ShowingSample covers "stats unavailable", so neither the CTA
         // nor the not-in-world text shows while editing — the outline is always the real grid's size.
@@ -191,14 +191,6 @@ public sealed partial class Plugin
         if (_disambiguationLabel.TryGetValue(attrId, out var prefix)) label = prefix + " " + label;
         if (_classificationBuilt) _labelOf[attrId] = label;   // the Base/Total prefixes exist only once classified
         return label;
-    }
-
-    private void ToggleSettingsFromGear()
-    {
-        if (LayoutEditing) return;   // the gear is dimmed + inert while arranging (edit-mode clicks are for dragging)
-        _settingsWindow.SetVisible(!_settingsWindow.IsShown);
-        _windowSection.Set("settings_visible", _settingsWindow.IsShown);
-        _windowSection.Save();
     }
 
     // White — the borderless mini-HUD has no background, so crisp white labels + the dark text outline read
