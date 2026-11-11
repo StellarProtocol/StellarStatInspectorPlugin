@@ -1,16 +1,19 @@
 using System.Collections.Generic;
+using Stellar.Abstractions.Diagnostics;
 
 namespace Stellar.StatInspector;
 
 /// <summary>
 /// Developer-mode logging for <see cref="Plugin"/>. All entry points short-circuit on the framework's
-/// Developer mode (<c>IFrameworkDeveloperMode.DeveloperMode</c>, fw 2.30.0) so production partials can call them
+/// Developer mode (<c>IFrameworkDeveloperMode.DeveloperMode</c>, fw 2.30.0) or the older <see cref="StellarDiagnostics.IsEnabled"/>
+/// flag, so production partials can call them
 /// unconditionally and a normal player's log carries none of these Info lines. Real failures (e.g. a Subscribe warning) are logged unconditionally at their call sites.
 /// </summary>
 public sealed partial class Plugin
 {
-    // Read live (a cheap property) so toggling Developer mode takes effect without a restart.
-    private bool DevLog => _services.Framework.DeveloperMode;
+    // Read live (cheap properties) so toggling Developer mode takes effect without a restart. The old diagnostics flag
+    // (StellarDiagnostics.IsEnabled) still enables the lines too, so existing diagnostic setups keep working.
+    private bool DevLog => StellarDiagnostics.IsEnabled || _services.Framework.DeveloperMode;
 
     private void LogStarterName(int attrId, string? name)
     {
