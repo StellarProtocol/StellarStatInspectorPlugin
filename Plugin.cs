@@ -175,10 +175,12 @@ public sealed partial class Plugin : IStellarPlugin
         }
         TrackStatChanges();
         RefreshMiniSnapshot();
-        // Settings picker upkeep — only while the window is shown (the tree has no per-frame entry now).
+        // Flattened picker rows: dirty-flag gated (a no-op almost every frame), kept current while the Settings window
+        // is hidden too so its framework pre-build fill (WindowSpec.Prebuild) lays out real rows, not an empty list.
+        RebuildSnapshotIfDirty();
+        // Settings picker upkeep — only while the window is shown (peek subscriptions must not run while hidden).
         if (_settingsWindow.IsShown)
         {
-            RebuildSnapshotIfDirty();
             RefreshWindowPeek();
             AdvanceResetState(_services.Framework.TimeNow);
         }

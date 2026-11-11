@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using Stellar.Abstractions.Domain;
@@ -41,6 +42,13 @@ public sealed partial class Plugin
             // and hide during loading screens.
             ShouldRender = () => _services.ClientState.Phase == GamePhase.World
                                  && (_services.ClientState.UiState & GameUIState.Loading) == 0,
+            // Framework pre-build (fw 2.30.0): the ~24-row picker pool is built at the title screen and filled off-screen
+            // once in the world, so the first open is a re-show. Build-time callbacks (button labels, TitleProvider) read
+            // only _loc / plugin state; the value lambdas read _snapshot (plugin data) and IPlayerStats/GameData exactly
+            // as they do when shown. _snapshot is kept current while hidden (OnUpdate → RebuildSnapshotIfDirty, a dirty-
+            // flag no-op almost always). Signature = classification ready + flattened row count (Loading… → real rows).
+            Prebuild          = true,
+            PrebuildSignature = () => HashCode.Combine(_classificationBuilt, _snapshot.Count),
         };
         return _services.Windows.Register(new WindowRegistration(spec, BuildSettingsRoot(),
             OnClose: () => { _settingsWindow.SetVisible(false); ClearPeek(); }));
