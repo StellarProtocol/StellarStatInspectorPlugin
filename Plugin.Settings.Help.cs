@@ -8,8 +8,9 @@ namespace Stellar.StatInspector;
 /// The round "?" beside the HUD Columns chips and its help popover, house style (Maestro Plugin.Help.cs /
 /// Plugin.Help.Tip.cs): a 24 px Neutral circle (lighter on hover, accent-tinted while its tip is open) whose click opens
 /// a title-bar-less GlassMenu popover anchored under it — 32 px accent "?" tile + bold setting name + muted
-/// "HUD · HELP" + round ✕, then the help text in one Tile box, 360 wide. Re-clicking the "?" closes it. One tip only
-/// (Columns), so there is no key registry.
+/// "HUD · HELP" + round ✕, then the help text in one Tile box, 360 wide. Re-clicking the "?" closes it. Two tips
+/// (Columns, Background) share the ONE popover: each "?" passes its title + body loc keys, and the popover's text Funcs
+/// read whichever pair is current — clicking the other "?" while open swaps the text and re-anchors it.
 /// </summary>
 public sealed partial class Plugin
 {
@@ -22,10 +23,14 @@ public sealed partial class Plugin
     private int _tipRepositionTicks;
     private readonly HoverFlag _helpHover = new();
     private readonly HoverFlag _tipCloseHover = new();
+    // The open tip's loc keys (constant strings — compared by reference, no allocation).
+    private string _tipTitleKey = "stat.columns", _tipBodyKey = "stat.help.columns";
+
+    private HudElement HelpDot() => HelpDot("stat.columns", "stat.help.columns", _helpHover);
 
     // Content = [24 px strut, the "?" in a 24 px box] side by side in ONE Row, so the circle is exactly its side (a
     // stacked spacer drew Maestro's "?" 24 × 26). CenterGlyphs centres the drawn "?" in its box.
-    private HudElement HelpDot() => new BubbleElement(new SelectableElement(
+    private HudElement HelpDot(string titleKey, string bodyKey, HoverFlag hover) => new BubbleElement(new SelectableElement(
         new RowElement(new HudElement[]
         {
             new SpacerElement(0f, HelpSize),
@@ -35,12 +40,14 @@ public sealed partial class Plugin
         OnClick: () => { })                       // the real work is in OnClickWithRect (needs the button's rect)
         {
             Bare = true,
-            OnHover = over => _helpHover.On = over,
-            OnClickWithRect = ToggleTip,
+            OnHover = over => hover.On = over,
+            OnClickWithRect = r => ToggleTip(r, titleKey, bodyKey),
         })
     {
-        FillColorFn = () => Fade(_tipWindow.IsShown ? Over(AccentColor() with { A = 0.35f }, NeutralFill())
-                                 : _helpHover.On ? HoverFill(NeutralFill())
+        // Accent-tinted only while THIS dot's tip is the one open.
+        FillColorFn = () => Fade(_tipWindow.IsShown && ReferenceEquals(_tipBodyKey, bodyKey)
+                                 ? Over(AccentColor() with { A = 0.35f }, NeutralFill())
+                                 : hover.On ? HoverFill(NeutralFill())
                                  : NeutralFill()),
         CornerRadius = RoundRadius(HelpSize), PaddingX = 0f, PaddingY = 0f,
     };
@@ -76,7 +83,7 @@ public sealed partial class Plugin
             TipIcon(),
             new CellElement(new ColumnElement(new HudElement[]
             {
-                new TextElement(() => _loc.T("stat.columns"), Color: () => TextColor(), NoWrap: true, FontSize: 14)
+                new TextElement(() => _loc.T(_tipTitleKey), Color: () => TextColor(), NoWrap: true, FontSize: 14)
                     { Bold = true, Ellipsize = true },
                 new TextElement(TipSubtitle, Color: () => MutedColor(), NoWrap: true, FontSize: 11)
                     { Bold = true, Ellipsize = true },
@@ -84,7 +91,7 @@ public sealed partial class Plugin
             TipCloseButton(),
         }, Gap: 10f),
         // The help text: one raised tile (house Tile colour, theme-live), wrapping inside the 360 px popover.
-        new BubbleElement(new TextElement(() => _loc.T("stat.help.columns"), Color: () => TextColor()))
+        new BubbleElement(new TextElement(() => _loc.T(_tipBodyKey), Color: () => TextColor()))
         {
             FillColorFn = () => Fade(TileColor()), CornerRadius = TileRadius, PaddingX = 10f, PaddingY = 8f,
         },
@@ -128,10 +135,13 @@ public sealed partial class Plugin
         CornerRadius = RoundRadius(HelpSize), PaddingX = 0f, PaddingY = 0f,
     };
 
-    // Toggle the tip: re-clicking the "?" closes it; otherwise anchor it under the "?".
-    private void ToggleTip(WindowRect r)
+    // Toggle the tip: re-clicking the same "?" closes it; otherwise (closed, or the other "?") show this tip's text
+    // anchored under the "?" that was clicked.
+    private void ToggleTip(WindowRect r, string titleKey, string bodyKey)
     {
-        if (_tipWindow.IsShown) { CloseTip(); return; }
+        if (_tipWindow.IsShown && ReferenceEquals(_tipBodyKey, bodyKey)) { CloseTip(); return; }
+        _tipTitleKey = titleKey;
+        _tipBodyKey = bodyKey;
         // OnClickWithRect reports SCREEN PIXELS; SetRect takes CANVAS units — scale first, or the tip drifts off its
         // "?" whenever the UI scale isn't 1 (WindowBuilder-Patterns.md, click-to-open tooltip).
         var fw = _services.Framework;

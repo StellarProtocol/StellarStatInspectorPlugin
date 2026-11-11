@@ -138,6 +138,7 @@ public sealed partial class Plugin : IStellarPlugin
     {
         _services.Config.SectionChanged -= OnConfigChanged;
         _services.Framework.Update -= OnUpdate;
+        FlushHudBgSave();   // a background-slider drag released just before unload still persists
 
         _toggleAction.Dispose();
         _settingsWindow.Remove();
@@ -182,6 +183,7 @@ public sealed partial class Plugin : IStellarPlugin
         }
         SettingsCentreTick();   // Plugin.Settings.Open.cs — the open-centred burst (a no-op once it ends)
         TipRepositionTick();    // Plugin.Settings.Help.cs — anchors the help popover under its "?" on open
+        HudBgSaveTick();        // Plugin.Settings.Background.cs — debounced config write after a slider drag
         SyncSettingsVisibility();
     }
 
@@ -232,6 +234,7 @@ public sealed partial class Plugin : IStellarPlugin
         }
 
         _columns = Math.Clamp(_windowSection.Get<int>("minihud_columns", 2), 1, 4);
+        LoadHudBgOpacity();   // Plugin.Settings.Background.cs — mini-HUD background, default 0 (none)
 
         // Group collapse defaults: Offensive + Defensive expanded; rest collapsed.
         _groupCollapsed["offensive"]  = _windowSection.Get<bool>("group_offensive_collapsed",  false);

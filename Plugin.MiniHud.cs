@@ -57,6 +57,9 @@ public sealed partial class Plugin
             // which body branch it shows (stats in → grid, N cells), so a fill that ran before the stats arrived or
             // with nothing selected is redone when that changes (and on entering/leaving the layout-edit preview).
             // ShouldRender needs no edit-mode term: the framework force-shows EditModeDragOnly windows while editing.
+            // Optional black fill behind the HUD (Settings → HUD → Background, 0 = none). A field read: the framework
+            // polls it. The field outlives the window, so a RebuildMiniHud (column change) keeps the value.
+            BackgroundOpacity       = () => _hudBgOpacity,
             Prebuild                = true,
             PrebuildSignature       = () => HashCode.Combine(_services.PlayerStats.IsAvailable, _miniSnapshot.Count, LayoutEditing),
         };

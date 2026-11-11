@@ -7,7 +7,7 @@ namespace Stellar.StatInspector;
 /// <summary>
 /// Settings window, house style (Stellar Design Language; user-approved prototype
 /// <c>_scratch\prototypes\statinspector-settings.html</c>, 2026-11-12). A fixed-size 420 px GlassMenu window:
-/// ToolHeader (accent bar-chart tile + live status) → HUD panel (Columns chips + "?" help) → STATS panel (search +
+/// ToolHeader (accent bar-chart tile + live status) → HUD panel (Columns chips + "?" help, Background slider) → STATS panel (search +
 /// clear, then the searchable / grouped / collapsible picker over the ~1252 classified attributes as a scroll-windowed
 /// <c>VirtualListElement</c> over the flattened <see cref="_snapshot"/>) → a 28 px footer (selected count / click
 /// feedback + Clear all, which turns into an inline confirm). Rows: Plugin.Settings.Rows.cs; feedback, footer and the
@@ -18,11 +18,12 @@ public sealed partial class Plugin
 {
     // Window: 420 wide, FIXED height (WindowSpec.FixedHeight), so nothing the window shows — search results, loading,
     // the confirm, feedback — can grow or shrink it (house rule 14). Height = title bar 32 + body padding 2×12 + header
-    // ≈42 + HUD panel ≈64 + STATS panel ≈74 + list + footer 28 + 3 gaps of 10 = 292 + list; with the 9-row list (250)
-    // ≈ 544. The list viewport is FLEXIBLE (no VirtualList.FixedHeight), so if a measured line height differs from the
+    // ≈42 + HUD panel ≈94 + STATS panel ≈74 + list + footer 28 + 3 gaps of 10 = 322 + list; with the 9-row list (250)
+    // ≈ 574. HUD panel = padding 2×8 + caption ≈18 + 2 rows of 24 (Columns chips, Background slider) + 2 column gaps
+    // of 6; the Background row added exactly 24 + 6 = 30 to the old 544 so the list keeps its height. The list viewport is FLEXIBLE (no VirtualList.FixedHeight), so if a measured line height differs from the
     // estimate the list absorbs the few px instead of the footer being squeezed or a gap opening below it.
     private const float SettingsWindowWidth  = 420f;
-    private const float SettingsWindowHeight = 544f;
+    private const float SettingsWindowHeight = 574f;
     private const int   PickerVisibleRows    = 9;
     private static readonly float PickerViewportH = ListHeight(PickerVisibleRows);   // 250
     private const int   SettingsPoolSize     = 14;   // rendered row pool: ⌈viewport ÷ 28⌉ + margin (viewport may flex a bit)
@@ -79,7 +80,8 @@ public sealed partial class Plugin
         BuildSettingsFooter(),   // Plugin.Settings.Feedback.cs
     }, Gap: SettingsGap);
 
-    // HUD panel: "Columns" + chips 1–4 + the round "?" at the right edge (opens the help popover).
+    // HUD panel: "Columns" + chips 1–4 + the round "?" at the right edge (opens the help popover), then the Background
+    // opacity slider row (Plugin.Settings.Background.cs).
     private HudElement BuildHudSection()
     {
         var row = new HudElement[4 + 3];
@@ -89,7 +91,8 @@ public sealed partial class Plugin
         row[5] = new SpacerElement(0f);   // flexible: the "?" lands on the panel's right edge
         row[6] = HelpDot();               // Plugin.Settings.Help.cs
         return SectionPanel(() => _loc.T("stat.section.hud"), () => _loc.T("stat.section.hud.hint"),
-            new RowElement(row, Gap: 6f));
+            new RowElement(row, Gap: 6f),
+            BuildHudBgRow());
     }
 
     // One columns chip: on = bold accent on a 22 % accent wash, off = muted on the Tile. Two complete chips in the same

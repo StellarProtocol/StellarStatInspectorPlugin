@@ -1,4 +1,5 @@
 {
+  "stat.background": "Likuran",
   "stat.cancel": "Kanselahin",
   "stat.clearAll": "Burahin lahat",
   "stat.clearAll.confirm": "Alisin lahat ng {0} sa HUD?",
@@ -10,6 +11,7 @@
   "stat.feedback.removed": "✓ Inalis ang “{0}” sa HUD · {1}",
   "stat.footer.selected": "{0} ang napili",
   "stat.header": "STATS",
+  "stat.help.background": "Pinapadilim ang bahagi sa likod ng HUD para mas madaling mabasa ang teksto. 0% = walang likuran.",
   "stat.help.columns": "Itinatakda kung ilang stat ang magkakatabi sa HUD. Kapag mas maraming column, mas malapad at mas maikli ang HUD.",
   "stat.help.title": "Tulong",
   "stat.hotkey.toggle": "I-toggle ang StatInspector mini-HUD",

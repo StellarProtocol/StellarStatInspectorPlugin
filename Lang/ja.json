@@ -1,4 +1,5 @@
 {
+  "stat.background": "背景",
   "stat.cancel": "キャンセル",
   "stat.clearAll": "すべてクリア",
   "stat.clearAll.confirm": "{0}項目をすべて外しますか？",
@@ -10,6 +11,7 @@
   "stat.feedback.removed": "✓ 「{0}」をHUDから削除 · {1}",
   "stat.footer.selected": "{0}項目を選択中",
   "stat.header": "ステータス",
+  "stat.help.background": "HUDの背後を暗くして、文字を読みやすくします。0% = 背景なし。",
   "stat.help.columns": "HUDに横並びで表示するステータスの数を設定します。列を増やすとHUDは横に広く、縦に短くなります。",
   "stat.help.title": "ヘルプ",
   "stat.hotkey.toggle": "StatInspectorミニHUDの表示切替",
