@@ -7,7 +7,8 @@ namespace Stellar.StatInspector;
 /// <summary>
 /// Settings window, house style (Stellar Design Language; user-approved prototype
 /// <c>_scratch\prototypes\statinspector-settings.html</c>, 2026-11-12). A fixed-size 420 px GlassMenu window:
-/// ToolHeader (accent bar-chart tile + live status) → HUD panel (Columns chips + "?" help, Background slider) → STATS panel (search +
+/// ToolHeader (accent bar-chart tile + live status) → HUD panel (Columns chips + "?" help, Background slider) → STATS panel
+/// (All stats | On the HUD tabs — the HUD order list is Plugin.Settings.Order.cs; on All stats: search +
 /// clear, then the searchable / grouped / collapsible picker over the ~1252 classified attributes as a scroll-windowed
 /// <c>VirtualListElement</c> over the flattened <see cref="_snapshot"/>) → a 28 px footer (selected count / click
 /// feedback + Clear all, which turns into an inline confirm). Rows: Plugin.Settings.Rows.cs; feedback, footer and the
@@ -22,9 +23,11 @@ public sealed partial class Plugin
     // ≈ 574. HUD panel = padding 2×8 + caption ≈18 + 2 rows of 24 (Columns chips, Background slider) + 2 column gaps
     // of 6; the Background row added exactly 24 + 6 = 30 to the old 544 so the list keeps its height. The list viewport is FLEXIBLE (no VirtualList.FixedHeight), so if a measured line height differs from the
     // estimate the list absorbs the few px instead of the footer being squeezed or a gap opening below it.
+    // The STATS tabs row (28 px track + 6 gap = 34) took one picker row (−28): 574 + 6 = 580, picker 8 rows. On the HUD
+    // tab the search row collapses, so the order list gets search + gap + picker = 256 → 9 full rows (Plugin.Settings.Order.cs).
     private const float SettingsWindowWidth  = 420f;
-    private const float SettingsWindowHeight = 574f;
-    private const int   PickerVisibleRows    = 9;
+    private const float SettingsWindowHeight = 580f;
+    private const int   PickerVisibleRows    = 8;
     private static readonly float PickerViewportH = ListHeight(PickerVisibleRows);   // 250
     private const int   SettingsPoolSize     = 14;   // rendered row pool: ⌈viewport ÷ 28⌉ + margin (viewport may flex a bit)
     private const float SettingsGap          = 10f;  // between header / panels / footer (the prototype's 10)
@@ -64,7 +67,7 @@ public sealed partial class Plugin
             // they do when shown. _snapshot is kept current while hidden (OnUpdate → RebuildSnapshotIfDirty, a dirty-
             // flag no-op almost always). Signature = classification ready + flattened row count (loading → real rows).
             Prebuild          = true,
-            PrebuildSignature = () => HashCode.Combine(_classificationBuilt, _snapshot.Count),
+            PrebuildSignature = () => HashCode.Combine(_classificationBuilt, _snapshot.Count, _hudTab),
         };
         return _services.Windows.Register(new WindowRegistration(spec, BuildSettingsRoot(),
             OnClose: CloseSettings));   // Plugin.Settings.Open.cs
@@ -142,9 +145,18 @@ public sealed partial class Plugin
             new TextElement(() => _loc.T("stat.loading.hint"), Color: () => MutedColor(), Align: TextAlign.Center),
         }, Gap: 4f);
 
+        // Tabs (Plugin.Settings.Order.cs), then ONE of the list areas. Flat no-else Conditionals: a hidden one collapses
+        // out of the layout (no gap), so on the HUD tab the order list fills the search row's space too and the panel's
+        // outer height never changes. Prebuild = a tab switch re-activates a built branch instead of building its pool.
         return SectionPanel(() => _loc.T("stat.section.stats"), StatsHint,
-            search,
-            new ConditionalElement(() => _classificationBuilt, picker, loading, Fill: true));
+            BuildStatsTabs(),
+            new ConditionalElement(() => !_hudTab, search),
+            new ConditionalElement(() => !_hudTab && _classificationBuilt, picker, Fill: true)
+                { Prebuild = true, PrebuildName = "picker" },
+            new ConditionalElement(() => !_hudTab && !_classificationBuilt, loading, Fill: true),
+            new ConditionalElement(() => _hudTab && _hudOrder.Count > 0, BuildHudOrderList(), Fill: true)
+                { Prebuild = true, PrebuildName = "hudorder" },
+            new ConditionalElement(() => _hudTab && _hudOrder.Count == 0, BuildHudOrderEmpty(), Fill: true));
     }
 
     private readonly FmtCache _statusFmt = new();
@@ -162,9 +174,11 @@ public sealed partial class Plugin
         return _statusFmt.Get(_loc.T(key), n, _columns);
     }
 
-    // STATS caption hint: how-to while browsing, the match count while searching, nothing while loading.
+    // STATS caption hint: the drag how-to on the HUD tab; how-to while browsing, the match count while searching,
+    // nothing while loading.
     private string StatsHint()
     {
+        if (_hudTab) return _loc.T("stat.section.stats.hint.order");
         if (!_classificationBuilt) return string.Empty;
         return _searching
             ? _matchesFmt.Get(_loc.T(_matchCount == 1 ? "stat.section.stats.matches.one" : "stat.section.stats.matches"),

@@ -8,6 +8,7 @@
   "stat.columns": "列数",
   "stat.feedback.added": "✓ 「{0}」をHUDに追加 · {1}",
   "stat.feedback.cleared": "✓ HUDのステータスをすべて外しました",
+  "stat.feedback.moved": "✓ 「{0}」を{1}番目に移動",
   "stat.feedback.removed": "✓ 「{0}」をHUDから削除 · {1}",
   "stat.footer.selected": "{0}項目を選択中",
   "stat.header": "ステータス",
@@ -21,6 +22,8 @@
   "stat.noneSelected": "ステータスが選択されていません。",
   "stat.notInWorld": "ワールド外 — 値を取得できません。",
   "stat.openSettings": "設定を開く",
+  "stat.order.empty": "HUDにステータスがまだありません。",
+  "stat.order.empty.hint": "「全ステータス」から選んでください。",
   "stat.row.added": "追加",
   "stat.row.removed": "削除",
   "stat.search.placeholder": "ステータスを検索…",
@@ -28,6 +31,7 @@
   "stat.section.hud.hint": "オーバーレイの配置",
   "stat.section.stats": "ステータス",
   "stat.section.stats.hint": "クリックでHUDに表示",
+  "stat.section.stats.hint.order": "ドラッグでHUDの順番を変更",
   "stat.section.stats.matches": "{0}件一致",
   "stat.section.stats.matches.one": "{0}件一致",
   "stat.settings.title": "StatInspector設定",
@@ -36,5 +40,7 @@
   "stat.status.oneBoth": "HUDに{0}項目 · {1}列",
   "stat.status.oneColumn": "HUDに{0}項目 · {1}列",
   "stat.status.oneStat": "HUDに{0}項目 · {1}列",
+  "stat.tab.all": "全ステータス",
+  "stat.tab.hud": "HUD表示中 · {0}",
   "stat.tool.title": "Stat Inspector"
 }

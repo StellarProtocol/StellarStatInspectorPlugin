@@ -8,6 +8,7 @@
   "stat.columns": "Mga column",
   "stat.feedback.added": "✓ Idinagdag ang “{0}” sa HUD · {1}",
   "stat.feedback.cleared": "✓ Inalis ang lahat ng stat sa HUD",
+  "stat.feedback.moved": "✓ Inilipat ang “{0}” sa posisyon {1}",
   "stat.feedback.removed": "✓ Inalis ang “{0}” sa HUD · {1}",
   "stat.footer.selected": "{0} ang napili",
   "stat.header": "STATS",
@@ -21,6 +22,8 @@
   "stat.noneSelected": "Walang napiling stat.",
   "stat.notInWorld": "Wala sa mundo — hindi available ang mga halaga.",
   "stat.openSettings": "Buksan ang settings",
+  "stat.order.empty": "Wala pang stat sa HUD.",
+  "stat.order.empty.hint": "Pumili sa Lahat ng stat.",
   "stat.row.added": "Idinagdag",
   "stat.row.removed": "Inalis",
   "stat.search.placeholder": "Maghanap ng stat…",
@@ -28,6 +31,7 @@
   "stat.section.hud.hint": "ayos ng overlay",
   "stat.section.stats": "Stats",
   "stat.section.stats.hint": "i-click ang stat para ipakita sa HUD",
+  "stat.section.stats.hint.order": "i-drag para baguhin ang ayos sa HUD",
   "stat.section.stats.matches": "{0} tugma",
   "stat.section.stats.matches.one": "{0} tugma",
   "stat.settings.title": "Mga Setting ng StatInspector",
@@ -36,5 +40,7 @@
   "stat.status.oneBoth": "{0} stat sa HUD · {1} column",
   "stat.status.oneColumn": "{0} stat sa HUD · {1} column",
   "stat.status.oneStat": "{0} stat sa HUD · {1} column",
+  "stat.tab.all": "Lahat ng stat",
+  "stat.tab.hud": "Nasa HUD · {0}",
   "stat.tool.title": "Stat Inspector"
 }

@@ -8,6 +8,7 @@
   "stat.columns": "Kolom",
   "stat.feedback.added": "✓ “{0}” ditambahkan ke HUD · {1}",
   "stat.feedback.cleared": "✓ Semua statistik dihapus dari HUD",
+  "stat.feedback.moved": "✓ “{0}” dipindah ke posisi {1}",
   "stat.feedback.removed": "✓ “{0}” dihapus dari HUD · {1}",
   "stat.footer.selected": "{0} dipilih",
   "stat.header": "STATISTIK",
@@ -21,6 +22,8 @@
   "stat.noneSelected": "Tidak ada statistik yang dipilih.",
   "stat.notInWorld": "Tidak di dalam dunia — nilai tidak tersedia.",
   "stat.openSettings": "Buka pengaturan",
+  "stat.order.empty": "Belum ada statistik di HUD.",
+  "stat.order.empty.hint": "Pilih di Semua statistik.",
   "stat.row.added": "Ditambah",
   "stat.row.removed": "Dihapus",
   "stat.search.placeholder": "Cari statistik…",
@@ -28,6 +31,7 @@
   "stat.section.hud.hint": "tata letak overlay",
   "stat.section.stats": "Statistik",
   "stat.section.stats.hint": "klik statistik untuk menampilkannya di HUD",
+  "stat.section.stats.hint.order": "seret untuk mengubah urutan HUD",
   "stat.section.stats.matches": "{0} cocok",
   "stat.section.stats.matches.one": "{0} cocok",
   "stat.settings.title": "Pengaturan StatInspector",
@@ -36,5 +40,7 @@
   "stat.status.oneBoth": "{0} statistik di HUD · {1} kolom",
   "stat.status.oneColumn": "{0} statistik di HUD · {1} kolom",
   "stat.status.oneStat": "{0} statistik di HUD · {1} kolom",
+  "stat.tab.all": "Semua statistik",
+  "stat.tab.hud": "Di HUD · {0}",
   "stat.tool.title": "Stat Inspector"
 }

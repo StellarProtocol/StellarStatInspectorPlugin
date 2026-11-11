@@ -8,6 +8,7 @@
   "stat.columns": "열 수",
   "stat.feedback.added": "✓ “{0}” HUD에 추가 · {1}",
   "stat.feedback.cleared": "✓ HUD의 능력치를 모두 제거했습니다",
+  "stat.feedback.moved": "✓ “{0}” {1}번째로 이동",
   "stat.feedback.removed": "✓ “{0}” HUD에서 제거 · {1}",
   "stat.footer.selected": "{0}개 선택됨",
   "stat.header": "능력치",
@@ -21,6 +22,8 @@
   "stat.noneSelected": "선택된 능력치 없음.",
   "stat.notInWorld": "월드 미접속 — 값을 사용할 수 없음.",
   "stat.openSettings": "설정 열기",
+  "stat.order.empty": "HUD에 능력치가 아직 없습니다.",
+  "stat.order.empty.hint": "전체 능력치에서 선택하세요.",
   "stat.row.added": "추가됨",
   "stat.row.removed": "제거됨",
   "stat.search.placeholder": "능력치 검색…",
@@ -28,6 +31,7 @@
   "stat.section.hud.hint": "오버레이 배치",
   "stat.section.stats": "능력치",
   "stat.section.stats.hint": "능력치를 클릭하면 HUD에 표시",
+  "stat.section.stats.hint.order": "드래그해서 HUD 순서 변경",
   "stat.section.stats.matches": "{0}개 일치",
   "stat.section.stats.matches.one": "{0}개 일치",
   "stat.settings.title": "능력치 보기 설정",
@@ -36,5 +40,7 @@
   "stat.status.oneBoth": "HUD에 능력치 {0}개 · {1}열",
   "stat.status.oneColumn": "HUD에 능력치 {0}개 · {1}열",
   "stat.status.oneStat": "HUD에 능력치 {0}개 · {1}열",
+  "stat.tab.all": "전체 능력치",
+  "stat.tab.hud": "HUD 표시 · {0}",
   "stat.tool.title": "능력치 보기"
 }

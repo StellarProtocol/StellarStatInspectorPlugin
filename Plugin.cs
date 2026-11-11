@@ -182,7 +182,8 @@ public sealed partial class Plugin : IStellarPlugin
         // Settings picker upkeep — only while the window is shown (peek subscriptions must not run while hidden).
         if (_settingsWindow.IsShown)
         {
-            RefreshWindowPeek();
+            // The HUD order tab shows only picked (already subscribed) stats → no display-only peeks while it's up.
+            if (_hudTab) ClearPeek(); else RefreshWindowPeek();
             AdvanceClearConfirm(_services.Framework.TimeNow);   // Plugin.Settings.Feedback.cs
         }
         SettingsCentreTick();   // Plugin.Settings.Open.cs — the open-centred burst (a no-op once it ends)
@@ -234,6 +235,7 @@ public sealed partial class Plugin : IStellarPlugin
 
         _columns = Math.Clamp(_windowSection.Get<int>("minihud_columns", 2), 1, 4);
         LoadHudBgOpacity();   // Plugin.Settings.Background.cs — mini-HUD background, default 0 (none)
+        _hudTab = _windowSection.Get<bool>(StatsTabKey, false);   // Plugin.Settings.Order.cs — STATS tab, default All stats
 
         // Group collapse defaults: Offensive + Defensive expanded; rest collapsed.
         _groupCollapsed["offensive"]  = _windowSection.Get<bool>("group_offensive_collapsed",  false);

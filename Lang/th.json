@@ -8,6 +8,7 @@
   "stat.columns": "คอลัมน์",
   "stat.feedback.added": "✓ เพิ่ม “{0}” ไปที่ HUD แล้ว · {1}",
   "stat.feedback.cleared": "✓ นำสเตตัสทั้งหมดออกจาก HUD แล้ว",
+  "stat.feedback.moved": "✓ ย้าย “{0}” ไปตำแหน่งที่ {1} แล้ว",
   "stat.feedback.removed": "✓ นำ “{0}” ออกจาก HUD แล้ว · {1}",
   "stat.footer.selected": "เลือก {0} รายการ",
   "stat.header": "สเตตัส",
@@ -21,6 +22,8 @@
   "stat.noneSelected": "ยังไม่ได้เลือกสเตตัส",
   "stat.notInWorld": "ไม่ได้อยู่ในโลก — ไม่มีค่าให้แสดง",
   "stat.openSettings": "เปิดการตั้งค่า",
+  "stat.order.empty": "ยังไม่มีสเตตัสบน HUD",
+  "stat.order.empty.hint": "เลือกได้ในแท็บสเตตัสทั้งหมด",
   "stat.row.added": "เพิ่มแล้ว",
   "stat.row.removed": "นำออกแล้ว",
   "stat.search.placeholder": "ค้นหาสเตตัส…",
@@ -28,6 +31,7 @@
   "stat.section.hud.hint": "การจัดวางโอเวอร์เลย์",
   "stat.section.stats": "สเตตัส",
   "stat.section.stats.hint": "คลิกสเตตัสเพื่อแสดงบน HUD",
+  "stat.section.stats.hint.order": "ลากเพื่อเปลี่ยนลำดับบน HUD",
   "stat.section.stats.matches": "ตรงกัน {0} รายการ",
   "stat.section.stats.matches.one": "ตรงกัน {0} รายการ",
   "stat.settings.title": "การตั้งค่า StatInspector",
@@ -36,5 +40,7 @@
   "stat.status.oneBoth": "{0} สเตตัสบน HUD · {1} คอลัมน์",
   "stat.status.oneColumn": "{0} สเตตัสบน HUD · {1} คอลัมน์",
   "stat.status.oneStat": "{0} สเตตัสบน HUD · {1} คอลัมน์",
+  "stat.tab.all": "สเตตัสทั้งหมด",
+  "stat.tab.hud": "บน HUD · {0}",
   "stat.tool.title": "Stat Inspector"
 }

@@ -8,6 +8,7 @@
   "stat.columns": "Columns",
   "stat.feedback.added": "✓ Added “{0}” to the HUD · {1}",
   "stat.feedback.cleared": "✓ Removed all stats from the HUD",
+  "stat.feedback.moved": "✓ Moved “{0}” to position {1}",
   "stat.feedback.removed": "✓ Removed “{0}” from the HUD · {1}",
   "stat.footer.selected": "{0} selected",
   "stat.header": "STATS",
@@ -21,6 +22,8 @@
   "stat.noneSelected": "No stats selected.",
   "stat.notInWorld": "Not in-world — values unavailable.",
   "stat.openSettings": "Open settings",
+  "stat.order.empty": "No stats on the HUD yet.",
+  "stat.order.empty.hint": "Pick some in All stats.",
   "stat.row.added": "Added",
   "stat.row.removed": "Removed",
   "stat.search.placeholder": "Search stats…",
@@ -28,6 +31,7 @@
   "stat.section.hud.hint": "overlay layout",
   "stat.section.stats": "Stats",
   "stat.section.stats.hint": "click a stat to show it on the HUD",
+  "stat.section.stats.hint.order": "drag to change the HUD order",
   "stat.section.stats.matches": "{0} matches",
   "stat.section.stats.matches.one": "{0} match",
   "stat.settings.title": "StatInspector Settings",
@@ -36,5 +40,7 @@
   "stat.status.oneBoth": "{0} stat on the HUD · {1} column",
   "stat.status.oneColumn": "{0} stats on the HUD · {1} column",
   "stat.status.oneStat": "{0} stat on the HUD · {1} columns",
+  "stat.tab.all": "All stats",
+  "stat.tab.hud": "On the HUD · {0}",
   "stat.tool.title": "Stat Inspector"
 }
