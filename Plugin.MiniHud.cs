@@ -13,7 +13,7 @@ namespace Stellar.StatInspector;
 /// via the value's colour Func, fading to neutral over <see cref="DeltaFadeSeconds"/>. States:
 /// populated grid / "no stats" CTA / not-in-world placeholder (ConditionalElement). The grid is
 /// built ONCE over a fixed cell pool; cells read the per-poll <see cref="_miniSnapshot"/> (the
-/// sorted selected ids, refreshed on Update — no allocation in Funcs). A gear (SelectableElement
+/// selected ids in HUD order, refreshed on Update — no allocation in Funcs). A gear (SelectableElement
 /// over an atlas SpriteElement) toggles the Settings window; F6 toggles the mini-HUD itself.
 /// </summary>
 public sealed partial class Plugin
@@ -25,7 +25,7 @@ public sealed partial class Plugin
     private const float MiniHudLabelW = 135f;
     private const int   MiniHudMaxCells = 64; // fixed cell pool (the selectable set never exceeds this in practice)
 
-    // Selected ids, sorted; refreshed on Update so the cell Funcs never allocate/scan.
+    // Selected ids in HUD order; refreshed on Update so the cell Funcs never allocate/scan.
     private readonly List<int> _miniSnapshot = new();
 
     private IWindowControl BuildAndRegisterMiniHud()
@@ -205,11 +205,11 @@ public sealed partial class Plugin
 
     private static float Lerp(float from, float to, float t) => from + (to - from) * t;
 
-    // Refresh the mini-HUD snapshot (selected ids, sorted) — called from OnUpdate. No allocation in Funcs.
+    // Refresh the mini-HUD snapshot (selected ids in the user's HUD order — NOT sorted: the order is the user's, set by
+    // drag in Settings → On the HUD) — called from OnUpdate. No allocation in Funcs.
     private void RefreshMiniSnapshot()
     {
         _miniSnapshot.Clear();
-        foreach (var id in _selected) _miniSnapshot.Add(id);
-        _miniSnapshot.Sort();
+        _miniSnapshot.AddRange(_hudOrder);
     }
 }

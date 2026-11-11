@@ -54,7 +54,10 @@ public sealed partial class Plugin : IStellarPlugin
     private readonly IHotkeyAction _toggleAction;
 
     // ---- Selection state (mirrors the IPlayerStats subscription set) -----------------
+    // _hudOrder = the stats on the HUD IN HUD ORDER (persisted as-is, user reorders it by drag); _selected = the same ids
+    // as a set for the O(1) Contains every picker row polls. Mutated together only through Plugin.Selection.cs.
     private readonly HashSet<int> _selected = new();
+    private readonly List<int> _hudOrder = new();
 
     // ---- Mini-HUD grid columns (1..4, user-configurable in settings) -----------------
     private int _columns = 2;
@@ -139,6 +142,7 @@ public sealed partial class Plugin : IStellarPlugin
         _services.Config.SectionChanged -= OnConfigChanged;
         _services.Framework.Update -= OnUpdate;
         FlushHudBgSave();   // a background-slider drag released just before unload still persists
+        FlushOrderSave();   // … and so does a HUD reorder (Plugin.Selection.cs)
 
         _toggleAction.Dispose();
         _settingsWindow.Remove();
@@ -184,6 +188,7 @@ public sealed partial class Plugin : IStellarPlugin
         SettingsCentreTick();   // Plugin.Settings.Open.cs — the open-centred burst (a no-op once it ends)
         TipRepositionTick();    // Plugin.Settings.Help.cs — anchors the help popover under its "?" on open
         HudBgSaveTick();        // Plugin.Settings.Background.cs — debounced config write after a slider drag
+        OrderSaveTick();        // Plugin.Selection.cs — debounced config write after a HUD reorder
         SyncSettingsVisibility();
     }
 
@@ -222,16 +227,10 @@ public sealed partial class Plugin : IStellarPlugin
 
     private void LoadConfig()
     {
-        // Selection. Empty/absent → use starter list as the in-memory default.
+        // Selection, in the stored order (= the HUD order). Empty/absent → use starter list as the in-memory default.
+        // Existing configs were saved id-sorted, so nothing moves until the user reorders.
         var saved = _statSection.Get<int[]>("selected", null) ?? Array.Empty<int>();
-        if (saved.Length == 0)
-        {
-            foreach (var id in StarterAttrIds) _selected.Add(id);
-        }
-        else
-        {
-            foreach (var id in saved) _selected.Add(id);
-        }
+        SetSelectionFrom(saved.Length == 0 ? StarterAttrIds : saved);   // Plugin.Selection.cs — drops dupes / invalid
 
         _columns = Math.Clamp(_windowSection.Get<int>("minihud_columns", 2), 1, 4);
         LoadHudBgOpacity();   // Plugin.Settings.Background.cs — mini-HUD background, default 0 (none)
